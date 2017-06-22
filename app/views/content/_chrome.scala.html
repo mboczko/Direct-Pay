@@ -51,12 +51,12 @@
 }
 <style>
      @if(loggedIn){
-    .site_title { font-size: 28px; font-weight: 500; color: @globals.settings(Option("br"), "country_appearance_text_1", 2).asInstanceOf[String] }
-    .site_title:hover { color: @globals.settings(Option("br"), "country_appearance_text_2", 2).asInstanceOf[String] }
-    .nav.navbar-nav > li > a { color: @globals.settings(Option("br"), "country_appearance_text_1", 2).asInstanceOf[String] }
+    .site_title { font-size: 28px; font-weight: 500; color: @globals.settings("dc", "country_appearance_text_1", 2).asInstanceOf[String] }
+    .site_title:hover { color: @globals.settings("dc", "country_appearance_text_2", 2).asInstanceOf[String] }
+    .nav.navbar-nav > li > a { color: @globals.settings("dc", "country_appearance_text_1", 2).asInstanceOf[String] }
     div.x_title { border-bottom: 3px solid #e6e9ed; }
-    div.x_title > h2, h3 { color: @globals.settings(Option("br"), "country_appearance_text_4", 2).asInstanceOf[String]; }
-    .text_additional_info, .calc_destak_info, .calc_mid_destak_info, .calc_low_destak_info { color: @globals.settings(Option("br"), "country_appearance_background_3", 2).asInstanceOf[String]; }
+    div.x_title > h2, h3 { color: @globals.settings("dc", "country_appearance_text_4", 2).asInstanceOf[String]; }
+    .text_additional_info, .calc_destak_info, .calc_mid_destak_info, .calc_low_destak_info { color: @globals.settings("dc", "country_appearance_background_3", 2).asInstanceOf[String]; }
     }
 </style>
 
@@ -65,7 +65,7 @@
     <nav class="navbar navbar-exchange navbar-fixed-top" role="navigation">
         <div class="container">
         @if(loggedIn) {
-            <div class="navbar-header" style="background: @globals.settings(Option("br"), "country_appearance_background_1", 2).asInstanceOf[String]">
+            <div class="navbar-header" style="background: @globals.settings("dc", "country_appearance_background_1", 2).asInstanceOf[String]">
                     <!-- Sidebar toggle button-->
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -75,10 +75,10 @@
                 </button>
                 @if(loggedIn) {
                     <a id="logo" href="@routes.Application.index()" style="background:
-                    @globals.settings(Option("br"), "country_appearance_background_1", 2).asInstanceOf[String];
-                        color: @globals.settings(Option("br"), "country_appearance_text_1", 2).asInstanceOf[String]">
-                    <span class="site_title"><i class="fa fa-play"></i> @globals.settings(Option("br"), "country_system_name", 2).asInstanceOf[String] @*play.api.Play.current.configuration.getString("application.name")*@</span>
-                    <span style="display: none" class="logo-text-icon"> @globals.settings(Option("br"), "country_system_name", 2).asInstanceOf[String] @*play.api.Play.current.configuration.getString("application.name")*@</span>
+                    @globals.settings("dc", "country_appearance_background_1", 2).asInstanceOf[String];
+                        color: @globals.settings("dc", "country_appearance_text_1", 2).asInstanceOf[String]">
+                    <span class="site_title"><i class="fa fa-play"></i> @globals.settings("dc", "country_system_name", 2).asInstanceOf[String] @*play.api.Play.current.configuration.getString("application.name")*@</span>
+                    <span style="display: none" class="logo-text-icon"> @globals.settings("dc", "country_system_name", 2).asInstanceOf[String] @*play.api.Play.current.configuration.getString("application.name")*@</span>
                     </a>
                 }
             </div>

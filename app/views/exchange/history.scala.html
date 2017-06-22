@@ -215,6 +215,7 @@
         <table id="table_orders" class="table table-striped responsive jambo_table bulk_action">
             <thead>
                 <tr>
+                    <th>@Messages("terminology.country")</th>
                     <th>@Messages("terminology.created")</th>
                     <th>@Messages("terminology.type")</th>
                     <th>@Messages("terminology.ipaddress")</th>
@@ -223,6 +224,7 @@
             <tbody>
                 {{#each this}}
                 <tr>
+                    <td>{{user_country}}</td>
                     <td>{{created}}</td>
                     <td>{{type}}</td>
                     <td>{{ip}}</td>

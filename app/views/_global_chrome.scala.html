@@ -36,7 +36,7 @@
           <script src="@routes.Assets.at("js/vendor/respond.min.js")"></script>
         <![endif]-->
     </head>
-    <body class="nav-md" style="background: @globals.settings(Option("br"), "country_appearance_background_1", 2).asInstanceOf[String]"; color: @globals.settings(Option("br"), "country_appearance_text_5", 2).asInstanceOf[String]">
+    <body class="nav-md" style="background: @globals.settings("dc", "country_appearance_background_1", 2).asInstanceOf[String]"; color: @globals.settings("dc", "country_appearance_text_5", 2).asInstanceOf[String]">
 
         @content
 

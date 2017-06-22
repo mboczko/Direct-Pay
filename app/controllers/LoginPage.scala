@@ -76,7 +76,7 @@ class LoginPage @Inject() (val messagesApi: MessagesApi) extends Controller with
       user <- txbitsUserService.find(authenticator.uid.get)
     ) yield {
       Authenticator.delete(authenticator.id)
-      globals.logModel.logEvent(LogEvent.fromRequest(Some(user.id), Some(user.email), request, LogType.Logout))
+      globals.logModel.logEvent(LogEvent.fromRequest(Some(user.id), Some(user.email), Some(user.user_country), request, LogType.Logout))
       user
     }
     val result = Redirect(to).discardingCookies(Authenticator.discardingCookie)

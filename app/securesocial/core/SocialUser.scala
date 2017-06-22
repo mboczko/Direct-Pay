@@ -21,7 +21,9 @@ import play.api.libs.json.{ JsValue, Json, JsObject, Writes }
 /**
  * An implementation of Identity.  Used by SecureSocial to gather user information when users sign up and/or sign in.
  */
-case class SocialUser(id: Long, email: String, verification: Int, language: String, onMailingList: Boolean, TFAEnabled: Boolean = false, pgp: Option[String] = None, manualauto_mode: Boolean, user_country: Option[String] = None, docs_verified: Boolean, partner: Option[String] = None, admin_xx: Option[String] = None)
+
+// Next line should not be br but default_country
+case class SocialUser(id: Long, email: String, verification: Int, language: String, onMailingList: Boolean, TFAEnabled: Boolean = false, pgp: Option[String] = None, manualauto_mode: Boolean, user_country: String, docs_verified: Boolean, partner: Option[String] = None, admin_xx: Option[String] = None)
 
 object SocialUser {
   implicit def writes = new Writes[SocialUser] {

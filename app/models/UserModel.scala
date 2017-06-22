@@ -56,7 +56,7 @@ class UserModel(val db: String = "default") {
           row[Boolean]("tfa_enabled"),
           row[Option[String]]("pgp"),
           row[Boolean]("manualauto_mode"),
-          row[Option[String]]("user_country"),
+          row[String]("user_country"),
           row[Boolean]("docs_verified"),
           row[Option[String]]("partner"),
           row[Option[String]]("admin_xx")
@@ -95,7 +95,7 @@ class UserModel(val db: String = "default") {
       row[Option[String]]("pgp"),
       row[String]("language"),
       row[Option[Boolean]]("manualauto_mode"),
-      row[Option[String]]("user_country"),
+      row[String]("user_country"),
       row[Option[Boolean]]("docs_verified"),
       row[Option[String]]("partner")) match {
         case (Some(id: Long),
@@ -106,7 +106,7 @@ class UserModel(val db: String = "default") {
           pgp: Option[String],
           language: String,
           manualauto_mode: Option[Boolean],
-          user_country: Option[String],
+          user_country: String,
           docs_verified: Option[Boolean],
           partner: Option[String]) =>
           Some(SocialUser(id, email, verification, language, on_mailing_list, tfa_enabled, pgp, manualauto_mode.getOrElse(false), user_country, docs_verified.getOrElse(false), partner))
@@ -127,7 +127,7 @@ class UserModel(val db: String = "default") {
       row[Option[String]]("pgp"),
       row[Option[String]]("language"),
       row[Option[Boolean]]("manualauto_mode"),
-      row[Option[String]]("user_country"),
+      row[String]("user_country"),
       row[Option[Boolean]]("docs_verified"),
       row[Option[String]]("partner")) match {
         case (Some(id: Long),
@@ -138,7 +138,7 @@ class UserModel(val db: String = "default") {
           pgp: Option[String],
           Some(language: String),
           Some(manualauto_mode: Boolean),
-          user_country: Option[String],
+          user_country: String,
           Some(docs_verified: Boolean),
           partner: Option[String]) =>
           Some(SocialUser(id, email, verification, language, on_mailing_list, tfa_enabled, pgp, manualauto_mode, user_country, docs_verified, partner))

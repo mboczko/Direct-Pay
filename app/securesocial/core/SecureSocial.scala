@@ -172,7 +172,7 @@ object SecureSocial {
       case Some(a) => {
         if (!a.isValid) {
           Authenticator.delete(a.id)
-          globals.logModel.logEvent(LogEvent.fromRequest(a.uid, None, request, LogType.SessionExpired))
+          globals.logModel.logEvent(LogEvent.fromRequest(a.uid, None, None, request, LogType.SessionExpired))
           None
         } else {
           Some(a)

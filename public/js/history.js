@@ -220,6 +220,7 @@ $(function(){
             for (var i = 0; i < data.length; i++) {
                 data[i].id = data[i].id;
                 data[i].email = data[i].email;
+                data[i].user_country = data[i].user_country;
                 data[i].ip = data[i].ip;
                 data[i].created = moment(data[i].created).format("YYYY-MM-DD, HH:mm:ss");
                 data[i].type = data[i].type; //one of: login_partial_success, login_success, login_failure, logout, session_expired

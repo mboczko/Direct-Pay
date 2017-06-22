@@ -70,6 +70,7 @@ object UsernamePasswordProvider {
  *
  * @param uuid the token id
  * @param email the user email
+ * // * @param user_country the country that system is to work
  * @param creationTime the creation time
  * @param expirationTime the expiration time
  * @param isSignUp a boolean indicating wether the token was created for a sign up action or not

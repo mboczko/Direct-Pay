@@ -14,8 +14,6 @@ currency_insert (
 declare
 begin
   insert into currencies (position, currency, country, admin_g1, admin_l1) values (a_position, a_currency, a_country, a_admin_g1, a_admin_l1);;
-  -- ### this insert should be changed... Each user only one country for now. Must change in the future
-  insert into balances (user_id, currency) select id, a_currency from users;;
 end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;
 

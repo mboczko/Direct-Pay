@@ -83,7 +83,7 @@ class APIv1 @Inject() (val messagesApi: MessagesApi) extends Controller with sec
   }
 
   def orders_list = SecuredAction(ajaxCall = true)(parse.json) { implicit request =>
-    val country = securesocial.core.SecureSocial.currentUser.get.user_country.getOrElse("br")
+    val country = securesocial.core.SecureSocial.currentUser.get.user_country
     val search_criteria = (request.request.body \ "search_criteria").asOpt[String]
     val search_value = (request.request.body \ "search_value").asOpt[String]
     val orders_list_info = globals.engineModel.OrderList(Some(request.user.id), country, search_criteria, search_value)
@@ -120,7 +120,7 @@ class APIv1 @Inject() (val messagesApi: MessagesApi) extends Controller with sec
   }
 
   def users_list = SecuredAction(ajaxCall = true)(parse.anyContent) { implicit request =>
-    val country = securesocial.core.SecureSocial.currentUser.get.user_country.getOrElse("br")
+    val country = securesocial.core.SecureSocial.currentUser.get.user_country
     val users_list_info = globals.engineModel.UsersList(country)
     Ok(Json.toJson(users_list_info.map({ c =>
       Json.obj(
@@ -197,6 +197,7 @@ class APIv1 @Inject() (val messagesApi: MessagesApi) extends Controller with sec
       Json.obj(
         "id" -> c.id,
         "email" -> c.email.getOrElse("").toString,
+        "user_country" -> c.user_country.getOrElse("").toString,
         "ip" -> c.ip.getOrElse("").toString,
         "created" -> c.created.getOrElse(new DateTime(0).toString).toString,
         "type" -> c.typ.toString
@@ -220,7 +221,7 @@ class APIv1 @Inject() (val messagesApi: MessagesApi) extends Controller with sec
   }
 
   def get_admins = SecuredAction(ajaxCall = true)(parse.anyContent) { implicit request =>
-    val admins = globals.engineModel.GetAdmins(securesocial.core.SecureSocial.currentUser.get.user_country.getOrElse("br"))
+    val admins = globals.engineModel.GetAdmins(securesocial.core.SecureSocial.currentUser.get.user_country)
     Ok(Json.toJson(admins.map({ c =>
       Json.obj(
         "admin_g1" -> c._1,
@@ -342,7 +343,7 @@ class APIv1 @Inject() (val messagesApi: MessagesApi) extends Controller with sec
     val agency = (request.request.body \ "agency").asOpt[String]
     val account = (request.request.body \ "account").asOpt[String]
     val doc1 = (request.request.body \ "doc1").asOpt[String]
-    if (globals.userModel.create_order(request.user.id, securesocial.core.SecureSocial.currentUser.get.user_country.getOrElse("br"), order_type, status, partner, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_code", 2).asInstanceOf[String], initial_value, Option(local_fee), Option(global_fee), bank, agency, account, doc1)) {
+    if (globals.userModel.create_order(request.user.id, securesocial.core.SecureSocial.currentUser.get.user_country, order_type, status, partner, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_code", 2).asInstanceOf[String], initial_value, Option(local_fee), Option(global_fee), bank, agency, account, doc1)) {
       Ok(Json.obj())
     } else {
       BadRequest(Json.obj("message" -> Messages("messages.api.error.failedtocreateorder")))

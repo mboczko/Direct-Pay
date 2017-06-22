@@ -176,7 +176,7 @@ class Registration @Inject() (val messagesApi: MessagesApi) extends Controller w
             if (UsernamePasswordProvider.sendWelcomeEmail) {
               Mailer.sendWelcomeEmail(user)
             }
-            globals.logModel.logEvent(LogEvent.fromRequest(Some(user.id), Some(user.email), request, LogType.SignupSuccess))
+            globals.logModel.logEvent(LogEvent.fromRequest(Some(user.id), Some(user.email), Some(user.user_country), request, LogType.SignupSuccess))
             if (UsernamePasswordProvider.signupSkipLogin) {
               completePasswordAuth(user.id, user.email)
             } else {

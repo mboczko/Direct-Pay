@@ -51,15 +51,15 @@ object LogType extends Enumeration {
   }*/
 }
 
-case class LogEvent(uid: Option[Long], email: Option[String], ip: Option[String], browser_headers: Option[String], browser_id: Option[String], ssl_info: Option[String], created: Option[DateTime], typ: LogType)
+case class LogEvent(uid: Option[Long], email: Option[String], user_country: Option[String], ip: Option[String], browser_headers: Option[String], browser_id: Option[String], ssl_info: Option[String], created: Option[DateTime], typ: LogType)
 
 object LogEvent {
   implicit val logEventWrites = Json.writes[LogEvent]
-  def fromRequest(uid: Option[Long], email: Option[String], request: RequestHeader, typ: LogType) = {
-    LogEvent(uid, email, Some(LogModel.ipFromRequest(request)), Some(LogModel.headersFromRequest(request)), None, None, None, typ)
+  def fromRequest(uid: Option[Long], email: Option[String], user_country: Option[String], request: RequestHeader, typ: LogType) = {
+    LogEvent(uid, email, user_country, Some(LogModel.ipFromRequest(request)), Some(LogModel.headersFromRequest(request)), None, None, None, typ)
   }
 }
-case class LoginEvent(id: Long, email: Option[String], ip: Option[String], created: Option[DateTime], typ: LogType)
+case class LoginEvent(id: Long, email: Option[String], user_country: Option[String], ip: Option[String], created: Option[DateTime], typ: LogType)
 
 object LoginEvent {
   implicit val writes = Json.writes[LoginEvent]
@@ -69,7 +69,7 @@ class LogModel(val db: String = "default") {
 
   def logEvent(logEvent: LogEvent) = DB.withConnection(db) { implicit c =>
     SQL"""
-    select * from new_log(${logEvent.uid}, ${logEvent.browser_headers}, ${logEvent.email}, ${logEvent.ssl_info}, ${logEvent.browser_id}, inet(${logEvent.ip}), ${logEvent.typ.toString})
+    select * from new_log(${logEvent.uid}, ${logEvent.browser_headers}, ${logEvent.email}, ${logEvent.user_country}, ${logEvent.ssl_info}, ${logEvent.browser_id}, inet(${logEvent.ip}), ${logEvent.typ.toString})
     """.execute()
   }
 
@@ -79,6 +79,7 @@ class LogModel(val db: String = "default") {
     """().map(row => LoginEvent(
       row[Long]("id"),
       row[Option[String]]("email"),
+      row[Option[String]]("user_country"),
       row[Option[String]]("ip"),
       Some(row[DateTime]("created")),
       LogType.withName(row[Option[String]]("type").getOrElse("other")))

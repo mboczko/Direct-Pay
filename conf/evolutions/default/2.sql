@@ -655,7 +655,7 @@ new_log (
   a_uid bigint,
   a_browser_headers text,
   a_email varchar(256),
-  a_user_country text,
+  a_user_country varchar(4),
   a_ssl_info text,
   a_browser_id text,
   a_ip inet,
@@ -680,6 +680,7 @@ login_log (
   a_last_id bigint default 0,
   out id bigint,
   out email varchar(256),
+  out user_country varchar(4),
   out ip text,
   out created timestamp(3),
   out type text
@@ -697,7 +698,7 @@ begin
     raise 'User id 0 is not allowed to use this function.';;
   end if;;
 
-  return query select e.id, e.email, host(e.ip), e.created, e.type
+  return query select e.id, e.email, e.user_country, host(e.ip), e.created, e.type
   from event_log e
   where e.type in ('login_success', 'login_failure', 'logout', 'session_expired')
     and e.user_id = a_uid
