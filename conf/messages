@@ -545,7 +545,34 @@ directpay.faq.3=É possível ...?
 directpay.faq.3.1=Sim, é possível...
 directpay.faq.3.2=Mais possível seria...
 
-
+directpay.contract.contract=Contrato de Adesão
+directpay.contract.contract.thiscontract=O presente contrato estabelece as relações e responsabilidades da DirectPay, dos usuários e dos parceiros, conforme descritos abaixo.
+directpay.contract.contract.thecontractstarts=A adesão ao presente contrato se dá quando o usuário completa seu processo de registro e permanece válido enquanto sejam considerados válidos seus dados cadastrais e documentos probatórios.
+directpay.contract.contract.thiscontractcanbemodified=Este contrato pode ser modificado a qualquer momento pela DirectPay, sendo as partes plenamente notificadas com pelo menos 10 dias de antecedência.
+directpay.contract.parts=Qualificação das partes
+directpay.contract.parts.thecompany=A DirectPay ltda é empresa legalmente estabelecida,  com sede na rua ### na cidade de ###, sob inscrição CNPJ 999.888.777/0001-33, atuando como intermediária de transações envolvendo créditos digitais.
+directpay.contract.parts.partners=Os parceiros são empresas que oferecem seus produtos e serviços através da Internet, podendo ser estes produtos ou serviços prestados localmente ou através da Internet.
+directpay.contract.parts.users=Os usuários são pessoas físicas, maiores de 18 anos e com plena capacidade para a tomada de decisões, execução de operações bancárias e ciência dos cuidado necessários e dos riscos inerentes às operações de compra, venda e envio de créditos digitais.
+directpay.contract.signin=Do cadastro
+directpay.contract.signin.userisresponsible=O usuário é responsável por todas as informações fornecidas em seu cadastro, incluindo nome completo, números de documentos, cópias de documentos autênticos, declarando-se ainda apto e autorizado a participar de transações bancárias e operações envolvendo créditos digitais.
+directpay.contract.signin.userdeclares=O usuário declara também ter pleno conhecimento da legislação envolvendo tais operações, notadamente as leis relativas à taxação e recolhimento de impostos e aquelas relativas a lavagem de dinheiro, atentando-se aos limites, padrões e procedimentos autorizados.
+directpay.contract.signin.thecompanykeepstheright=A DirectPay se resguarda o direito de avaliar os dados fornecidos, buscando identificar a veracidade e adequação das informações fornecidas pelos usuários no momento do cadastro ou nas atualizações das informações cadastrais, visando o melhor atendimento possível às disposições legais.
+directpay.contract.contractend=Do término ou cessão do contrato
+directpay.contract.contractend.thecontractendswhen=O contrato se considera rescindido ou suspenso quando:
+directpay.contract.contractend.thecontractendswhen.userspersonalinfoinvalid=O usuário descaracteriza seus dados cadastrais (nome, números de documentos, cópias de documentos)
+directpay.contract.contractend.thecontractendswhen.underpartnersrequest=O Parceiro assim o solicita formalmente, através de documento apropriado junto à DirectPay
+directpay.contract.contractend.thecontractendswhen.thecompanyconsiders=A DirectPay julgar inadequado o procedimento de Usuário ou Parceiro, podendo suspender o cadastro do mesmo, zelando pela legalidade, adequação das operações e segurança do sistema e dos demais Usuários e Parceiros.
+directpay.contract.contractend.thecontractendswhen.duringtemporaryinterruptions=No caso de interrupção temporária das operações da DirectPay, em decorrência de problemas técnicos, de segurança ou outros que impossibilitem o seguro e correto gerencimento de operações
+directpay.contract.contractend.thecontractendswhen.bytheendofcompany=Pelo fim das operações da DirectPay, que deve tanto quanto possível ser noticiado através do site com pelo menos 30 dias de antecedência
+directpay.contract.contractend.remaindutesandrights=Em qualquer caso de suspensão ou cessão deste contrato, permanecem as obrigações e direitos pactuadas durante o período de operação, desde que observados os critérios de legalidade e adequação. Direitos e deveres assumidos pela DirectPay, Parceiros e Usuários permanecem válidos e devem ser, tanto quanto possível, honrados de maneira voluntária e imediata. O não cumprimento dos deveres pactuados pode ser contestado judicialmente.
+directpay.contract.intermediationservice=Contrato de Intermediação
+directpay.contract.intermediationservice.thiscontract=O presente contrato, estabelecido sob o modelo de adesão, tem por fim regular os direitos e obrigações das partes contratantes (Usuário, DirectPay e Parceiros).
+directpay.contract.usersdutesandrights=Dos direitos e deveres do Usuário
+directpay.contract.usersdutesandrights.userswithrecordsnotverified=O usuário que não esteja plenamente qualificado (dados cadastrais adequados e verificados) terá acesso a seus dados cadastrais e às informações relativas a seus direitos fiduciários e créditos digitais, não podendo no entanto executar algumas operações. Tal restrição se impõe da ###
+directpay.contract.usersdutesandrights.userwithrecordsverified=O usuário , quando plenamente qualificado, terá acesso ao sistema e ao gerenciamento de seus dados cadastrais e de seus direitos fiduciários e créditos digitais.
+directpay.contract.usersdutesandrights.userwillbeallowed=Poderá ainda executar operações
+directpay.contract.legalactions=Da legalidade e adequação das ordens.
+directpay.contract.legalactions.companykeepstheright=Resguarda-se ainda o direito de não execução de quaisquer procedimentos e operações que sejam ou pareçam inadequados sob os critérios de legislação, fraudes, lavagem de dinheiro ou outras operações ilegais ou que aparentem estar sendo executadas em detrimento de direito legítimo de outrem.
 
 
 

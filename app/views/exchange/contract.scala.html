@@ -3,41 +3,35 @@
 @import helper._
 
 @scripts = {
+    <script src="@routes.Assets.at("js/contract.js")"></script>
 }
 
-
-@cont_item(number: Int, number_items: Int, repl1: Any, repl2: Any, repl3: Any, repl4: Any) = {
-    <p style="margin: 16px 0 10px;"><span class="cont_number">@number</span> - <label for="cont_@number"><span class="cont_title">@Messages("directpay.cont.".concat(number.toString()))<span></label></p>
-    <input type="checkbox" name="chk_@number" id="cont_@number" checked><div class="show_hide">
-    @for(counter <- 1 to number_items) {
-        <p> &nbsp; &nbsp; @Messages("directpay.cont.".concat(number.toString()).concat(".").concat(counter.toString()), repl1, repl2, repl3, repl4)</p>
-    }
-    </div>
-}
 
 <style>
-    .cont_number, .cont_title { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_6", 2).asInstanceOf[String]; cursor: hand}
-    .cont_title:hover { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_4", 2).asInstanceOf[String] }
-    .show_hide { }
-    input { position:absolute; left:-999em }
-    input[type=checkbox]:checked + div { opacity:0; max-height:0; border:none; }
+    .p_level1 { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_6", 2).asInstanceOf[String]; font-size: 14px; cursor: hand}
+    .p_level1:hover { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_4", 2).asInstanceOf[String] }
+    .p_leveln { }
 </style>
 
 @exchange._chrome(Messages("chrome.exchange.navigation.contract.title"), "contract", scripts) {
         <!-- page content -->
-
     <div class="page-title">
         <div class="title_left">
-            <h3>
-                <i class="fa fa-book"> &nbsp;</i> @Messages("directpay.navigation.termsandcontract.title")
-            </h3>
+            <h3><i class="fa fa-book"> &nbsp;</i> @Messages("directpay.navigation.termsandcontract.title")</h3>
         </div>
     </div>
 
-    @cont_item(1, 3, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_system_name", 2).asInstanceOf[String], globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_code"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_symbol"), "")
-    @cont_item(2, 3, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_name"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_code"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_symbol"), "")
-    @cont_item(3, 3, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_system_name", 2).asInstanceOf[String], globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_code"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_symbol"), "")
+    <p id="contract-body-script-position"></p>  <!-- Script is called here -->
 
+        <!-- Contract Body script -->
+    <script id="contract-body-script-template" type="text/x-handlebars-template">
+        {{#each this}}
+        <p style="margin: 16px {{p_level}}0px 10px; padding-left: {{p_level}}0px;" class="{{p_class}} {{p_level}}_{{p_level1}}" id="{{p_level}}{{p_level1}}">
+        <span class="cont_number">{{p_number}}</span><span class="cont_text">{{p_text}}</span>
+        </p>
+        {{/each}}
+    </script>
+        <!-- end of Contract Body script -->
 
 
 
@@ -45,35 +39,8 @@
     Versão Jan/2018
     www.directPay.com.br
     OUVIDORIA: 0800 282 9900 1
-    ATENDIMENTO: email@email.com
-    1         Contrato de Adesão
-    1.1   O presente contrato estabelece as relações e responsabilidades da DirectPay, dos usuários e dos parceiros, conforme descritos abaixo.
-    1.2   A adesão ao presente contrato se dá quando o usuário completa seu processo de registro e permanece válido enquanto sejam considerados válidos seus dados cadastrais e documentos probatórios.
-    1.3   Este contrato pode ser modificado a qualquer momento pela DirectPay, sendo as partes plenamente notificadas com pelo menos 10 dias de antecedência.
-    2         Qualificação das partes
-    2.1   A DirectPay ltda é empresa legalmente estabelecida,  com sede na rua ### na cidade de ###, sob inscrição CNPJ 999.888.777/0001-33, atuando como intermediária de transações envolvendo créditos digitais.
-    2.2   Os parceiros são empresas que oferecem seus produtos e serviços através da Internet, podendo ser estes produtos ou serviços prestados localmente ou através da Internet.
-    2.3   Os usuários são pessoas físicas, maiores de 18 anos e com plena capacidade para a tomada de decisões, execução de operações bancárias e ciência dos cuidado necessários e dos riscos inerentes às operações de compra, venda e envio de créditos digitais.
-    3         Do cadastro
-    3.1   O usuário é responsável por todas as informações fornecidas em seu cadastro, incluindo nome completo, números de documentos, cópias de documentos autênticos, declarando-se ainda apto e autorizado a participar de transações bancárias e operações envolvendo créditos digitais.
-    3.2   O usuário declara também ter pleno conhecimento da legislação envolvendo tais operações, notadamente as leis relativas à taxação e recolhimento de impostos e aquelas relativas a lavagem de dinheiro, atentando-se aos limites, padrões e procedimentos autorizados.
-    3.3   A DirectPay se resguarda o direito de avaliar os dados fornecidos, buscando identificar a veracidade e adequação das informações fornecidas pelos usuários no momento do cadastro ou nas atualizações das informações cadastrais, visando o melhor atendimento possível às disposições legais.
-    4         Do término ou cessão do contrato
-    4.1   O contrato se considera rescindido ou suspenso quando:
-    a)      O usuário descaracteriza seus dados cadastrais (nome, números de documentos, cópias de documentos)
-    b)      O Parceiro assim o solicita formalmente, através de documento apropriado junto à DirectPay
-    c)       A DirectPay julgar inadequado o procedimento de Usuário ou Parceiro, podendo suspender o cadastro do mesmo, zelando pela legalidade, adequação das operações e segurança do sistema e dos demais Usuários e Parceiros.
-    d)      No caso de interrupção temporária das operações da DirectPay, em decorrência de problemas técnicos, de segurança ou outros que impossibilitem o seguro e correto gerencimento de operações
-    e)      Pelo fim das operações da DirectPay, que deve tanto quanto possível ser noticiado através do site com pelo menos 30 dias de antecedência
-    4.2   Em qualquer caso de suspensão ou cessão deste contrato, permanecem as obrigações e direitos pactuadas durante o período de operação, desde que observados os critérios de legalidade e adequação. Direitos e deveres assumidos pela DirectPay, Parceiros e Usuários permanecem válidos e devem ser, tanto quanto possível, honrados de maneira voluntária e imediata. O não cumprimento dos deveres pactuados pode ser contestado judicialmente.
-    5         Contrato de Intermediação
-    5.1   O presente contrato, estabelecido sob o modelo de adesão, tem por fim regular os direitos e obrigações das partes contratantes (Usuário, DirectPay e Parceiros).
-    6         Dos direitos e deveres do Usuário
-    6.1   O usuário que não esteja plenamente qualificado (dados cadastrais adequados e verificados) terá acesso a seus dados cadastrais e às informações relativas a seus direitos fiduciários e créditos digitais, não podendo no entanto executar algumas operações. Tal restrição se impõe da ###
-    6.2   O usuário , quando plenamente qualificado, terá acesso ao sistema e ao gerenciamento de seus dados cadastrais e de seus direitos fiduciários e créditos digitais.
-    6.3   Poderá ainda executar operações
-    6.4   tem o direito de fazer as
-    6.5   Da legalidade e adequação das ordens. Resguarda-se ainda o direito de não execução de quaisquer procedimentos e operações que sejam ou pareçam inadequados sob os critérios de legislação, fraudes, lavagem de dinheiro ou outras operações ilegais ou que aparentem estar sendo executadas em detrimento de direito legítimo de outrem.
+    ATENDIMENTO: email<>email.com
+    <br><br>
 
 
 
