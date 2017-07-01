@@ -43,7 +43,7 @@ class UserTrustService(val model: UserTrustModel) extends Actor {
   // Warning: It is not safe to have two user trust services running at the same time
   def processTrustedActionRequests() {
 
-    for ((email, is_signup, language) <- model.getTrustedActionRequests) {
+    for ((email, user_country, is_signup, language) <- model.getTrustedActionRequests) {
       // XXX: temporary hack to make languages work in emails
       implicit val messages = new Messages(Lang.get(language).getOrElse(Lang.defaultLang),
         new DefaultMessagesApi(play.api.Environment.simple(new File("."), Mode.Prod),
@@ -58,29 +58,31 @@ class UserTrustService(val model: UserTrustModel) extends Actor {
         txbitsUserService.userExists(email) match {
           case true => {
             // user signed up already, send an email offering to login/recover password
-            Mailer.sendAlreadyRegisteredEmail(email, globals.userModel.userPgpByEmail(email))
+            Mailer.sendAlreadyRegisteredEmail(email, globals.userModel.userPgpByEmail(email, user_country))
           }
           case false => {
-            val token = createToken(email, isSignUp = is_signup, language)
+            val token = createToken(email, user_country, isSignUp = is_signup, language)
             Mailer.sendSignUpEmail(email, token)
           }
         }
       } else {
         // create and save token
-        val token = createToken(email, isSignUp = is_signup, language)
-        Mailer.sendPasswordResetEmail(email, token, globals.userModel.userPgpByEmail(email))
+        val token = createToken(email, user_country, isSignUp = is_signup, language)
+        Mailer.sendPasswordResetEmail(email, token, globals.userModel.userPgpByEmail(email, user_country))
       }
       // remove the token from the queue
-      model.trustedActionFinish(email, is_signup)
+      model.trustedActionFinish(email, user_country, is_signup)
     }
   }
 
-  private def createToken(email: String, isSignUp: Boolean, language: String) = {
+  private def createToken(email: String, user_country: String, isSignUp: Boolean, language: String) = {
     val tokenId = IdGenerator.generateEmailToken
     val now = DateTime.now
 
     val token = Token(
-      tokenId, email,
+      tokenId,
+      email,
+      user_country,
       now,
       now.plusMinutes(TokenDuration),
       isSignUp = isSignUp,

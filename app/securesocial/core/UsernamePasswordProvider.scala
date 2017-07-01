@@ -75,6 +75,6 @@ object UsernamePasswordProvider {
  * @param expirationTime the expiration time
  * @param isSignUp a boolean indicating wether the token was created for a sign up action or not
  */
-case class Token(uuid: String, email: String, creationTime: DateTime, expirationTime: DateTime, isSignUp: Boolean, language: String) {
+case class Token(uuid: String, email: String, user_country: String, creationTime: DateTime, expirationTime: DateTime, isSignUp: Boolean, language: String) {
   def isExpired = expirationTime.isBeforeNow
 }

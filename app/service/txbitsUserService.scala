@@ -32,13 +32,13 @@ object txbitsUserService {
     globals.userModel.findUserById(id)
   }
 
-  def userExists(email: String): Boolean = {
-    globals.userModel.userExists(email)
+  def userExists(email: String, user_country: String): Boolean = {
+    globals.userModel.userExists(email, user_country)
   }
 
-  def create(user: SocialUser, password: String, token: String, pgp: String): SocialUser = {
+  def create(user: SocialUser, user_country: String, password: String, token: String, pgp: String): SocialUser = {
     val pgp_key = PGP.parsePublicKey(pgp).map(_._2)
-    val user_id = globals.userModel.create(user.email, password, user.onMailingList, pgp_key, token)
+    val user_id = globals.userModel.create(user.email, user_country, password, user.onMailingList, pgp_key, token)
 
     user_id match {
       case Some(id) => {
@@ -49,13 +49,13 @@ object txbitsUserService {
   }
 
   def save(user: SocialUser): SocialUser = {
-    globals.userModel.saveUser(user.id, user.email, user.onMailingList)
+    globals.userModel.saveUser(user.id, user.email, user.user_country, user.onMailingList)
     user
   }
 
   // this function requires higher database privileges
-  def resetPass(email: String, token: String, password: String) {
-    globals.userModel.userResetPassComplete(email, token, password)
+  def resetPass(email: String, user_country: String, token: String, password: String) {
+    globals.userModel.userResetPassComplete(email, user_country, token, password)
   }
 
   /**

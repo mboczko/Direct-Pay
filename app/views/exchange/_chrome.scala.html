@@ -147,7 +147,6 @@
                                         <li class="class_manual"><a href="@routes.Application.withdraw().url"><i class="fa fa-minus"></i> @Messages("chrome.exchange.navigation.withdraw.label") </a></li>
                                         <li class="class_automatic"><a href="@routes.Application.deposit().url"><i class="fa fa-plus"></i><i class="fa fa-upload"></i>@Messages("directpay.navigation.depositsend.title") </a></li>
                                         <li class="class_automatic"><a href="@routes.Application.receive().url"><i class="fa fa-download"></i><i class="fa fa-minus"></i>@Messages("directpay.navigation.receivewithdraw.title") </a></li>
-                                        <li><a href="@routes.LoginPage.logout().url"><i class="fa fa-logout"></i> @Messages("terminology.logout") </a></li>
                                     </ul>
                                 </li>
                                 <li><a><i class="fa fa-edit"></i> @Messages("chrome.exchange.navigation.account.title") <span class="fa fa-chevron-down"></span></a>
@@ -156,6 +155,7 @@
                                         @if(globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_doc1_ispicture", 0).asInstanceOf[Boolean] || globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_doc2_ispicture", 0).asInstanceOf[Boolean] || globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_doc3_ispicture", 0).asInstanceOf[Boolean] || globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_doc4_ispicture", 0).asInstanceOf[Boolean] || globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_doc5_ispicture", 0).asInstanceOf[Boolean]) {<li><a href="@routes.Application.documents().url"><i class="fa fa-file-text"></i> @Messages("directpay.navigation.documents.title") </a></li>}
                                         <li><a href="@routes.Application.account().url"><i class="fa fa-key"></i> @Messages("directpay.navigation.security.title") </a></li>
                                         <li><a href="@routes.Application.history().url"><i class="fa fa-list"></i> @Messages("chrome.exchange.navigation.history.label") </a></li>
+                                        <li><a href="@routes.LoginPage.logout().url"><i class="fa fa-sign-out"></i> @Messages("terminology.logout") </a></li>
                                     </ul>
                                 </li>
                                 <li><a><i class="fa fa-info"></i> @Messages("directpay.navigation.support.title") <span class="fa fa-chevron-down"></span></a>

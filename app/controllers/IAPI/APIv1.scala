@@ -235,7 +235,13 @@ class APIv1 @Inject() (val messagesApi: MessagesApi) extends Controller with sec
         "email_l1" -> c._9,
         "email_l2" -> c._10,
         "email_o1" -> c._11,
-        "email_o2" -> c._12
+        "email_o2" -> c._12,
+        "user_country_g1" -> c._13,
+        "user_country_g2" -> c._14,
+        "user_country_l1" -> c._15,
+        "user_country_l2" -> c._16,
+        "user_country_o1" -> c._17,
+        "user_country_o2" -> c._18
       )
     })
     ))
@@ -410,13 +416,19 @@ class APIv1 @Inject() (val messagesApi: MessagesApi) extends Controller with sec
 
   def save_admins = SecuredAction(ajaxCall = true)(parse.json) { implicit request =>
     val country = (request.request.body \ "country").asOpt[String]
-    val admin_g1 = (request.request.body \ "admin_g1").asOpt[String]
-    val admin_g2 = (request.request.body \ "admin_g2").asOpt[String]
-    val admin_l1 = (request.request.body \ "admin_l1").asOpt[String]
-    val admin_l2 = (request.request.body \ "admin_l2").asOpt[String]
-    val admin_o1 = (request.request.body \ "admin_o1").asOpt[String]
-    val admin_o2 = (request.request.body \ "admin_o2").asOpt[String]
-    if (globals.userModel.save_admins(country, admin_g1, admin_g2, admin_l1, admin_l2, admin_o1, admin_o2)) {
+    val email_g1 = (request.request.body \ "email_g1").asOpt[String]
+    val email_g2 = (request.request.body \ "email_g2").asOpt[String]
+    val email_l1 = (request.request.body \ "email_l1").asOpt[String]
+    val email_l2 = (request.request.body \ "email_l2").asOpt[String]
+    val email_o1 = (request.request.body \ "email_o1").asOpt[String]
+    val email_o2 = (request.request.body \ "email_o2").asOpt[String]
+    val user_country_g1 = (request.request.body \ "user_country_g1").asOpt[String]
+    val user_country_g2 = (request.request.body \ "user_country_g2").asOpt[String]
+    val user_country_l1 = (request.request.body \ "user_country_l1").asOpt[String]
+    val user_country_l2 = (request.request.body \ "user_country_l2").asOpt[String]
+    val user_country_o1 = (request.request.body \ "user_country_o1").asOpt[String]
+    val user_country_o2 = (request.request.body \ "user_country_o2").asOpt[String]
+    if (globals.userModel.save_admins(country, email_g1, email_g2, email_l1, email_l2, email_o1, email_o2, user_country_g1, user_country_g2, user_country_l1, user_country_l2, user_country_o1, user_country_o2)) {
       Ok(Json.obj())
     } else {
       BadRequest(Json.obj("message" -> Messages("messages.api.error.failedtosaveadministrators")))

@@ -85,7 +85,7 @@ class PasswordChange @Inject() (val messagesApi: MessagesApi) extends Controller
           import scala.language.reflectiveCalls
           // This never actually fails because we already checked that the password is valid in the validators
           if (globals.userModel.userChangePass(request.user.id, info.currentPassword, info.password)) {
-            Mailer.sendPasswordChangedNotice(request.user.email, globals.userModel.userPgpByEmail(request.user.email))
+            Mailer.sendPasswordChangedNotice(request.user.email, globals.userModel.userPgpByEmail(request.user.email, request.user.user_country))
             Redirect(onHandlePasswordChangeGoTo).flashing(Success -> Messages(OkMessage))
           } else {
             BadRequest(views.html.auth.passwordChange(form.withError("currentPassword", Messages(InvalidPasswordMessage))))
