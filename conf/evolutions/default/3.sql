@@ -31,24 +31,24 @@ $$ language plpgsql volatile security definer set search_path = public, pg_temp 
 create or replace function
 create_user (
   a_email varchar(256),
+  a_user_country varchar(4),
   a_password text,
   a_onMailingList bool,
   a_pgp text,
   a_language varchar(10),
-  a_user_country varchar(6),
   a_docs_verified bool,
   a_partner varchar(64)
 ) returns bigint as $$
 declare
   new_user_id bigint;;
 begin
-  insert into users(id, email, on_mailing_list, pgp, language, user_country, docs_verified, partner) values (
+  insert into users(id, email, user_country, on_mailing_list, pgp, language, docs_verified, partner) values (
       generate_random_user_id(),
       a_email,
+      a_user_country,
       a_onMailingList,
       a_pgp,
       a_language,
-      a_user_country,
       a_docs_verified,
       a_partner
     ) returning id into new_user_id;;
@@ -67,6 +67,7 @@ $$ language plpgsql volatile security invoker set search_path = public, pg_temp 
 create or replace function
 create_user_complete (
   a_email varchar(256),
+  a_user_country varchar(4),
   a_password text,
   a_onMailingList bool,
   a_pgp text,
@@ -79,12 +80,12 @@ begin
   if a_email = '' then
     raise 'User id 0 is not allowed to use this function.';;
   end if;;
-  select true, language into valid_token, token_language from tokens where token = a_token and lower(email) = lower(a_email) and is_signup = true and expiration >= current_timestamp;;
+  select true, language into valid_token, token_language from tokens where token = a_token and lower(email) = lower(a_email) and user_country = a_user_country and is_signup = true and expiration >= current_timestamp;;
   if valid_token is null then
     return null;;
   end if;;
-  delete from tokens where lower(email) = lower(a_email) and is_signup = true;;
-  return create_user(a_email, a_password, a_onMailingList, a_pgp, token_language);;
+  delete from tokens where lower(email) = lower(a_email) and user_country = a_user_country and is_signup = true;;
+  return create_user(a_email, a_user_country, a_password, a_onMailingList, a_pgp, token_language);;
 end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;
 
@@ -115,6 +116,7 @@ $$ language sql stable security definer set search_path = public, pg_temp cost 1
 create or replace function
 trusted_action_start (
   a_email varchar(256),
+  a_user_country varchar(4),
   a_is_signup boolean,
   a_language varchar(10)
 ) returns boolean as $$
@@ -122,16 +124,16 @@ declare
   email_exists boolean;;
   lang varchar(10);;
 begin
-  select true into email_exists from trusted_action_requests where lower(email) = lower(a_email) and is_signup = a_is_signup;;
+  select true into email_exists from trusted_action_requests where lower(email) = lower(a_email) and user_country = a_user_country and is_signup = a_is_signup;;
   if email_exists then
     return false;;
   end if;;
   if a_language = '' or a_language is null then
-    select language into lang from users where lower(email) = lower(a_email);;
+    select language into lang from users where lower(email) = lower(a_email) and user_country = a_user_country ;;
   else
     select a_language into lang;;
   end if;;
-  insert into trusted_action_requests values (a_email, a_is_signup, lang);;
+  insert into trusted_action_requests values (a_email, a_user_country, a_is_signup, lang);;
   return true;;
 end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;
@@ -170,22 +172,23 @@ find_token (
   a_token varchar(256),
   out tokens
 ) returns setof tokens as $$
-  select token, email, creation, expiration, is_signup from tokens where token = a_token;;
+  select token, email, user_country, creation, expiration, is_signup from tokens where token = a_token;;
 $$ language sql stable security definer set search_path = public, pg_temp cost 100;
 
 create or replace function
 trusted_action_start (
   a_email varchar(256),
+  a_user_country varchar(4),
   a_is_signup boolean
 ) returns boolean as $$
 declare
   email_exists boolean;;
 begin
-  select true into email_exists from trusted_action_requests where email = a_email and is_signup = a_is_signup;;
+  select true into email_exists from trusted_action_requests where email = a_email and user_country = a_user_country and is_signup = a_is_signup;;
   if email_exists then
     return false;;
   end if;;
-  insert into trusted_action_requests values (a_email, a_is_signup);;
+  insert into trusted_action_requests values (a_email, a_user_country, a_is_signup);;
   return true;;
 end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;

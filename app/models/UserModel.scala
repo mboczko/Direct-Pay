@@ -31,16 +31,16 @@ import anorm.JodaParameterMetaData._
 
 class UserModel(val db: String = "default") {
 
-  def create(email: String, password: String, onMailingList: Boolean, pgp: Option[String], token: String) = DB.withConnection(db) { implicit c =>
+  def create(email: String, user_country: String, password: String, onMailingList: Boolean, pgp: Option[String], token: String) = DB.withConnection(db) { implicit c =>
     SQL"""
-    select create_user_complete as id from create_user_complete($email, $password, $onMailingList, $pgp, $token)
+    select create_user_complete as id from create_user_complete($email, $user_country, $password, $onMailingList, $pgp, $token)
     """.map(row => row[Option[Long]]("id")).list.head
   }
 
   // insecure version, usable only in tests
-  def create(email: String, password: String, onMailingList: Boolean) = DB.withConnection(db) { implicit c =>
+  def create(email: String, user_country: String, password: String, onMailingList: Boolean) = DB.withConnection(db) { implicit c =>
     SQL"""
-    select create_user as id from create_user($email, $password, $onMailingList, null, 'en')
+    select create_user as id from create_user($email, $user_country, $password, $onMailingList, null, 'en')
     """.map(row => row[Long]("id")).list.headOption
   }
 
@@ -50,13 +50,13 @@ class UserModel(val db: String = "default") {
         new SocialUser(
           row[Long]("id"),
           row[String]("email"),
+          row[String]("user_country"),
           row[Int]("verification"),
           row[String]("language"),
           row[Boolean]("on_mailing_list"),
           row[Boolean]("tfa_enabled"),
           row[Option[String]]("pgp"),
           row[Boolean]("manualauto_mode"),
-          row[String]("user_country"),
           row[Boolean]("docs_verified"),
           row[Option[String]]("partner"),
           row[Option[String]]("admin_xx")
@@ -64,14 +64,14 @@ class UserModel(val db: String = "default") {
       ).headOption
     }
 
-  def userExists(email: String): Boolean = DB.withConnection(db) { implicit c =>
-    SQL"select * from user_exists($email)"().map(row =>
+  def userExists(email: String, user_country: String): Boolean = DB.withConnection(db) { implicit c =>
+    SQL"select * from user_exists($email, $user_country)"().map(row =>
       row[Boolean]("user_exists")
     ).head
   }
 
-  def userHasTotp(email: String): Boolean = DB.withConnection(db) { implicit c =>
-    SQL"select * from user_has_totp($email)"().map(row =>
+  def userHasTotp(email: String, user_country: String): Boolean = DB.withConnection(db) { implicit c =>
+    SQL"select * from user_has_totp($email, $user_country)"().map(row =>
       row[Option[Boolean]]("user_has_totp").getOrElse(false)
     ).head
   }
@@ -84,64 +84,64 @@ class UserModel(val db: String = "default") {
     ).head
   }
 
-  def totpLoginStep2(email: String, totpHash: String, totpToken: String, browserHeaders: String, ip: String): Option[SocialUser] = DB.withConnection(db) { implicit c =>
+  def totpLoginStep2(email: String, user_country: String, totpHash: String, totpToken: String, browserHeaders: String, ip: String): Option[SocialUser] = DB.withConnection(db) { implicit c =>
     SQL"""
     select * from totp_login_step2($email, $totpHash, ${safeToInt(totpToken)}, $browserHeaders, inet($ip))
     """().map(row => (row[Option[Long]]("id"),
       row[Option[String]]("email"),
+      row[String]("user_country"),
       row[Option[Int]]("verification"),
       row[Option[Boolean]]("on_mailing_list"),
       row[Option[Boolean]]("tfa_enabled"),
       row[Option[String]]("pgp"),
       row[String]("language"),
       row[Option[Boolean]]("manualauto_mode"),
-      row[String]("user_country"),
       row[Option[Boolean]]("docs_verified"),
       row[Option[String]]("partner")) match {
         case (Some(id: Long),
           Some(email: String),
+          user_country: String,
           Some(verification: Int),
           Some(on_mailing_list: Boolean),
           Some(tfa_enabled: Boolean),
           pgp: Option[String],
           language: String,
           manualauto_mode: Option[Boolean],
-          user_country: String,
           docs_verified: Option[Boolean],
           partner: Option[String]) =>
-          Some(SocialUser(id, email, verification, language, on_mailing_list, tfa_enabled, pgp, manualauto_mode.getOrElse(false), user_country, docs_verified.getOrElse(false), partner))
+          Some(SocialUser(id, email, user_country, verification, language, on_mailing_list, tfa_enabled, pgp, manualauto_mode.getOrElse(false), docs_verified.getOrElse(false), partner))
         case _ =>
           None
       }
     ).head
   }
 
-  def findUserByEmailAndPassword(email: String, password: String, user_country: String, browserHeaders: String, ip: String): Option[SocialUser] = DB.withConnection(db) { implicit c =>
+  def findUserByEmailAndPassword(email: String, user_country: String, password: String, browserHeaders: String, ip: String): Option[SocialUser] = DB.withConnection(db) { implicit c =>
     SQL"""
-    select * from find_user_by_email_and_password($email, $password, $user_country, $browserHeaders, inet($ip))
+    select * from find_user_by_email_and_password($email, $user_country, $password, $browserHeaders, inet($ip))
     """().map(row => (row[Option[Long]]("id"),
       row[Option[String]]("email"),
+      row[Option[String]]("user_country"),
       row[Option[Int]]("verification"),
       row[Option[Boolean]]("on_mailing_list"),
       row[Option[Boolean]]("tfa_enabled"),
       row[Option[String]]("pgp"),
       row[Option[String]]("language"),
       row[Option[Boolean]]("manualauto_mode"),
-      row[String]("user_country"),
       row[Option[Boolean]]("docs_verified"),
       row[Option[String]]("partner")) match {
         case (Some(id: Long),
           Some(email: String),
+          Some(user_country: String),
           Some(verification: Int),
           Some(on_mailing_list: Boolean),
           Some(tfa_enabled: Boolean),
           pgp: Option[String],
           Some(language: String),
           Some(manualauto_mode: Boolean),
-          user_country: String,
           Some(docs_verified: Boolean),
           partner: Option[String]) =>
-          Some(SocialUser(id, email, verification, language, on_mailing_list, tfa_enabled, pgp, manualauto_mode, user_country, docs_verified, partner))
+          Some(SocialUser(id, email, user_country, verification, language, on_mailing_list, tfa_enabled, pgp, manualauto_mode, docs_verified, partner))
         case _ =>
           None
       }
@@ -152,7 +152,7 @@ class UserModel(val db: String = "default") {
     SQL"""
     select * from find_token($token)
     """().map(row =>
-      Token(token, row[String]("email"), row[DateTime]("creation"), row[DateTime]("expiration"), row[Boolean]("is_signup"), row[String]("language"))
+      Token(token, row[String]("email"), row[String]("user_country"), row[DateTime]("creation"), row[DateTime]("expiration"), row[Boolean]("is_signup"), row[String]("language"))
     ).headOption
   }
 
@@ -172,8 +172,8 @@ class UserModel(val db: String = "default") {
     """.execute()
   }
 
-  def saveUser(id: Long, email: String, onMailingList: Boolean) = DB.withConnection(db) { implicit c =>
-    SQL"select * from update_user($id, $email, $onMailingList)".execute()
+  def saveUser(id: Long, email: String, user_country: String, onMailingList: Boolean) = DB.withConnection(db) { implicit c =>
+    SQL"select * from update_user($id, $email, $user_country, $onMailingList)".execute()
   }
 
   def userChangePass(id: Long, oldPassword: String, newPassword: String) = DB.withConnection(db) { implicit c =>
@@ -192,9 +192,9 @@ class UserModel(val db: String = "default") {
     ).head
   }
 
-  def trustedActionStart(email: String, isSignup: Boolean, language: String) = DB.withConnection(db) { implicit c =>
+  def trustedActionStart(email: String, user_country: String, isSignup: Boolean, language: String) = DB.withConnection(db) { implicit c =>
     SQL"""
-    select trusted_action_start as success from trusted_action_start($email, $isSignup, $language)
+    select trusted_action_start as success from trusted_action_start($email, $user_country, $isSignup, $language)
     """().map(row =>
       row[Boolean]("success")
     ).head
@@ -275,9 +275,9 @@ class UserModel(val db: String = "default") {
     ).head
   }
 
-  def userPgpByEmail(email: String) = DB.withConnection(db) { implicit c =>
+  def userPgpByEmail(email: String, user_country: String) = DB.withConnection(db) { implicit c =>
     SQL"""
-    select * from user_pgp_by_email($email)
+    select * from user_pgp_by_email($email, $user_country)
     """().map(row =>
       row[Option[String]]("pgp")
     ).head
@@ -358,9 +358,9 @@ class UserModel(val db: String = "default") {
     """.execute()
   }
 
-  def save_admins(country: Option[String], admin_g1: Option[String], admin_g2: Option[String], admin_l1: Option[String], admin_l2: Option[String], admin_o1: Option[String], admin_o2: Option[String]) = DB.withConnection(db) { implicit c =>
+  def save_admins(country: Option[String], email_g1: Option[String], email_g2: Option[String], email_l1: Option[String], email_l2: Option[String], email_o1: Option[String], email_o2: Option[String], user_country_g1: Option[String], user_country_g2: Option[String], user_country_l1: Option[String], user_country_l2: Option[String], user_country_o1: Option[String], user_country_o2: Option[String]) = DB.withConnection(db) { implicit c =>
     SQL"""
-     select save_admins as success from save_admins(${country.get}, ${admin_g1.get}, ${admin_g2.get}, ${admin_l1.get}, ${admin_l2.get}, ${admin_o1.get}, ${admin_o2.get})
+     select save_admins as success from save_admins(${country.get}, ${email_g1.get}, ${email_g2.get}, ${email_l1.get}, ${email_l2.get}, ${email_o1.get}, ${email_o2.get}, {user_country_g1.get}, ${user_country_g2.get}, ${user_country_l1.get}, ${user_country_l2.get}, ${user_country_o1.get}, ${user_country_o2.get})
     """.execute()
   }
 

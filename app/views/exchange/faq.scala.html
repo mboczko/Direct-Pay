@@ -3,23 +3,13 @@
 @import helper._
 
 @scripts = {
-}
-
-@faq_item(number: Int, number_items: Int, repl1: Any, repl2: Any, repl3: Any, repl4: Any) = {
-    <p style="margin: 16px 0 10px;"><span class="faq_number">@number</span> - <label for="faq_@number"><span class="faq_title">@Messages("directpay.faq.".concat(number.toString()))<span></label></p>
-    <input type="checkbox" name="chk_@number" id="faq_@number" checked><div class="show_hide">
-    @for(counter <- 1 to number_items) {
-        <p> &nbsp; &nbsp; @Messages("directpay.faq.".concat(number.toString()).concat(".").concat(counter.toString()), repl1, repl2, repl3, repl4)</p>
-    }
-    </div>
+    <script src="@routes.Assets.at("js/faq.js")"></script>
 }
 
 <style>
-    .faq_number, .faq_title { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_6", 2).asInstanceOf[String]; cursor: hand}
-    .faq_title:hover { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_4", 2).asInstanceOf[String] }
-    .show_hide { }
-    input { position:absolute; left:-999em }
-    input[type=checkbox]:checked + div { opacity:0; max-height:0; border:none; }
+    .p_level1 { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_6", 2).asInstanceOf[String]; font-size: 14px; cursor: hand}
+    .p_level1:hover { color: @globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_appearance_text_4", 2).asInstanceOf[String] }
+    .p_leveln { display: none }
 </style>
 
 @exchange._chrome(Messages("chrome.exchange.navigation.faq.title"), "FAQ", scripts) {
@@ -33,9 +23,18 @@
         </div>
     </div>
 
-    @faq_item(1, 3, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_system_name", 2).asInstanceOf[String], globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_code"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_symbol"), "")
-    @faq_item(2, 3, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_name"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_code"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_symbol"), "")
-    @faq_item(3, 3, globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_system_name", 2).asInstanceOf[String], globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_code"), globals.settings(securesocial.core.SecureSocial.currentUser.get.user_country, "country_currency_symbol"), "")
+
+    <p id="faq-body-script-position"></p>  <!-- Script is called here -->
+
+        <!-- Faq Body script -->
+    <script id="faq-body-script-template" type="text/x-handlebars-template">
+    {{#each this}}
+        <p style="margin: 16px {{p_level}}0px 10px; padding-left: {{p_level}}0px;" class="{{p_class}} {{p_level}}_{{p_level1}}" id="{{p_level}}{{p_level1}}">
+            <span class="faq_number">{{p_number}}</span><span class="faq_text">{{p_text}}</span>
+        </p>
+    {{/each}}
+    </script>
+        <!-- end of Faq Body script -->
 
 
     <div class="disclaimer-text">
