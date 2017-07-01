@@ -2,6 +2,7 @@
 
 # --- !Ups
 
+
 -- https://wiki.postgresql.org/wiki/First/last_%28aggregate%29
 
 -- create a function that always returns the first non-null item
@@ -154,17 +155,16 @@ $$ language plpgsql volatile security definer set search_path = public, pg_temp 
 create or replace function
 trusted_action_start (
   a_email varchar(256),
-  a_user_country varchar(4),
   a_is_signup boolean
 ) returns boolean as $$
 declare
   email_exists boolean;;
 begin
-  select true into email_exists from trusted_action_requests where email = a_email and user_country = a_user_country and is_signup = a_is_signup;;
+  select true into email_exists from trusted_action_requests where email = a_email and is_signup = a_is_signup;;
   if email_exists then
     return false;;
   end if;;
-  insert into trusted_action_requests values (a_email, a_user_country, a_is_signup);;
+  insert into trusted_action_requests values (a_email, a_is_signup);;
   return true;;
 end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;
@@ -172,7 +172,6 @@ $$ language plpgsql volatile security definer set search_path = public, pg_temp 
 create or replace function
 user_reset_password_complete (
   a_email varchar(256),
-  a_user_country varchar(4),
   a_token varchar(256),
   a_new_password text
 ) returns boolean as $$
@@ -182,12 +181,12 @@ begin
   if a_email = '' then
     raise 'User id 0 is not allowed to use this function.';;
   end if;;
-  select true into valid_token from tokens where token = a_token and email = a_email and user_country = a_user_country and is_signup = false and expiration >= current_timestamp;;
+  select true into valid_token from tokens where token = a_token and email = a_email and is_signup = false and expiration >= current_timestamp;;
   if valid_token is null then
     return false;;
   end if;;
-  delete from tokens where email = a_email and user_country = a_user_country and is_signup = false;;
-  insert into users_passwords (user_id, password) select id, crypt(a_new_password, gen_salt('bf', 8)) from users where email = a_email and user_country = a_user_country;;
+  delete from tokens where email = a_email and is_signup = false;;
+  insert into users_passwords (user_id, password) select id, crypt(a_new_password, gen_salt('bf', 8)) from users where email = a_email;;
   return true;;
 end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;
@@ -408,19 +407,19 @@ find_user_by_id (
     a_id bigint,
   out id bigint,
   out email varchar(256),
-  out user_country varchar(4),
   out verification int,
   out language varchar(10),
   out on_mailing_list bool,
   out tfa_enabled bool,
   out pgp text,
   out manualauto_mode bool,
+  out user_country varchar(4),
   out docs_verified bool,
   out partner varchar(64),
   out admin_xx varchar(2)
 ) returns setof record as $$
 declare
-  b_user_country varchar(4);;
+  a_user_country varchar(4);;
   b_admin_g1 bigint;;
   b_admin_g2 bigint;;
   b_admin_l1 bigint;;
@@ -429,33 +428,33 @@ declare
   b_admin_o2 bigint;;
   b_admin_xx varchar(8);;
 begin
-  select users.user_country into b_user_country from users where users.id = a_id;;
+  a_user_country = 'br';; -- ### need to take it as argument of the function
   if a_id = 0 then
     raise 'User id 0 is not allowed to use this function.';;
   end if;;
   select admin_g1, admin_g2, admin_l1, admin_l2, admin_o1, admin_o2 into b_admin_g1, b_admin_g2, b_admin_l1, b_admin_l2, b_admin_o1, b_admin_o2
-  from currencies where country = b_user_country;;
+  from currencies where country = a_user_country;;
 
 -- support for this function: https://stackoverflow.com/questions/3097150/add-a-temporary-column-with-a-value and https://stackoverflow.com/questions/23348743/return-setof-record-with-1-row
-  if b_admin_g1 = a_id then
-    return query select u.id, u.email, u.user_country, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.docs_verified, u.partner, 'admin_g1'::varchar(8) from users u where u.id = a_id;;
+if b_admin_g1 = a_id then
+    return query select u.id, u.email, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.user_country, u.docs_verified, u.partner, 'admin_g1'::varchar(8) from users u where u.id = a_id;;
   else
     if b_admin_g2 = a_id then
-      return query select u.id, u.email, u.user_country, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.docs_verified, u.partner, 'admin_g2'::varchar(8) from users u where u.id = a_id;;
+      return query select u.id, u.email, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.user_country, u.docs_verified, u.partner, 'admin_g2'::varchar(8) from users u where u.id = a_id;;
     else
       if b_admin_l1 = a_id then
-        return query select u.id, u.email, u.user_country, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.docs_verified, u.partner, 'admin_l1'::varchar(8) from users u where u.id = a_id;;
+        return query select u.id, u.email, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.user_country, u.docs_verified, u.partner, 'admin_l1'::varchar(8) from users u where u.id = a_id;;
       else
         if b_admin_l2 = a_id then
-          return query select u.id, u.email, u.user_country, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.docs_verified, u.partner, 'admin_l2'::varchar(8) from users u where u.id = a_id;;
+          return query select u.id, u.email, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.user_country, u.docs_verified, u.partner, 'admin_l2'::varchar(8) from users u where u.id = a_id;;
         else
           if b_admin_o1 = a_id then
-            return query select u.id, u.email, u.user_country, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.docs_verified, u.partner, 'admin_o1'::varchar(8) from users u where u.id = a_id;;
+            return query select u.id, u.email, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.user_country, u.docs_verified, u.partner, 'admin_o1'::varchar(8) from users u where u.id = a_id;;
           else
             if b_admin_o2 = a_id then
-              return query select u.id, u.email, u.user_country, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.docs_verified, u.partner, 'admin_o2'::varchar(8) from users u where u.id = a_id;;
+              return query select u.id, u.email, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.user_country, u.docs_verified, u.partner, 'admin_o2'::varchar(8) from users u where u.id = a_id;;
             else
-              return query select u.id, u.email, u.user_country, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.docs_verified, u.partner, ''::varchar(8) from users u where u.id = a_id;;
+              return query select u.id, u.email, u.verification, u.language, u.on_mailing_list, u.tfa_enabled, u.pgp, u.manualauto_mode, u.user_country, u.docs_verified, u.partner, ''::varchar(8) from users u where u.id = a_id;;
             end if;;
           end if;;
         end if;;
@@ -466,37 +465,33 @@ end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;
 
 create or replace function
-  user_exists (
+user_exists (
   a_email varchar(256),
-  a_user_country varchar(4),
   out user_exists boolean
 ) returns boolean as $$
   select (case when count(*) > 0 then true else false end) from users
-  where lower(email) = lower(a_email) and user_country = a_user_country;;
+  where lower(email) = lower(a_email);;
 $$ language sql volatile security definer set search_path = public, pg_temp cost 100;
 
 create or replace function
 user_pgp_by_email (
   a_email varchar(256),
-  a_user_country varchar(4),
   out pgp text
 ) returns text as $$
-  select pgp from users where lower(email) = lower(a_email) and user_country = a_user_country;;
+  select pgp from users where lower(email) = lower(a_email);;
 $$ language sql volatile security definer set search_path = public, pg_temp cost 100;
 
 create or replace function
 user_has_totp (
-  a_email varchar(256),
-  a_user_country varchar(4)
+  a_email varchar(256)
 ) returns boolean as $$
-  select tfa_enabled from users where lower(email) = lower(a_email) and user_country = a_user_country;;
+  select tfa_enabled from users where lower(email) = lower(a_email);;
 $$ language sql volatile security definer set search_path = public, pg_temp cost 100;
 
 -- null on failure
 create or replace function
 totp_login_step1 (
   a_email varchar(256),
-  a_user_country varchar(4),
   a_password text,
   a_browser_headers text,
   a_ip inet
@@ -505,7 +500,7 @@ declare
   u users%rowtype;;
   sec text;;
 begin
-  select * into u from find_user_by_email_and_password_invoker(a_email, a_user_country, a_password, a_browser_headers, a_ip, true);;
+  select * into u from find_user_by_email_and_password_invoker(a_email, a_password, a_browser_headers, a_ip, true);;
   if u is null then
     return null;;
   end if;;
@@ -519,7 +514,6 @@ $$ language plpgsql volatile strict security definer set search_path = public, p
 create or replace function
 totp_login_step2 (
   a_email varchar(256),
-  a_user_country varchar(4),
   a_secret_hash text,
   a_tfa_code int,
   a_browser_headers text,
@@ -529,7 +523,7 @@ declare
   u users%rowtype;;
   matched boolean;;
 begin
-  select * into strict u from users where lower(email) = lower(a_email) and user_country = a_user_country;;
+  select * into strict u from users where lower(email) = lower(a_email);;
 
   select a_secret_hash = crypt(tfa_secret, a_secret_hash) into matched from users_tfa_secrets where user_id = u.id order by created desc limit 1;;
   if not matched or matched is null then
@@ -537,10 +531,10 @@ begin
   end if;;
 
   if user_totp_check(u.id, a_tfa_code) then
-    perform new_log(u.id, a_browser_headers, a_email, a_user_country, null, null, a_ip, 'login_success');;
+    perform new_log(u.id, a_browser_headers, a_email, null, null, a_ip, 'login_success');;
     return u;;
   else
-    perform new_log(u.id, a_browser_headers, a_email, a_user_country, null, null, a_ip, 'login_failure');;
+    perform new_log(u.id, a_browser_headers, a_email, null, null, a_ip, 'login_failure');;
     return null;;
   end if;;
 end;;
@@ -549,26 +543,26 @@ $$ language plpgsql volatile strict security definer set search_path = public, p
 create or replace function
 find_user_by_email_and_password (
   a_email varchar(256),
-  a_user_country varchar(4),
   a_password text,
+  a_country text,
   a_browser_headers text,
   a_ip inet
 ) returns users as $$
 declare
 begin
-  if user_has_totp(a_email, a_user_country) then
+  if user_has_totp(a_email) then
     raise 'Internal error. Cannot find user by email and password if totp is enabled.';;
   end if;;
 
-  return find_user_by_email_and_password_invoker(a_email, a_user_country, a_password, a_browser_headers, a_ip, false);;
+  return find_user_by_email_and_password_invoker(a_email, a_password, a_country, a_browser_headers, a_ip, false);;
 end;;
 $$ language plpgsql volatile security definer set search_path = public, pg_temp cost 100;
 
 create or replace function
 find_user_by_email_and_password_invoker (
   a_email varchar(256),
-  a_user_country varchar(4),
   a_password text,
+  a_user_country text,
   a_browser_headers text,
   a_ip inet,
   a_totp_step1 boolean
@@ -612,7 +606,7 @@ find_token (
   a_token varchar(256),
   out tokens
 ) returns setof tokens as $$
-  select token, email, user_country, creation, expiration, is_signup from tokens where token = a_token;;
+  select token, email, creation, expiration, is_signup from tokens where token = a_token;;
 $$ language sql stable security definer set search_path = public, pg_temp cost 100;
 
 create or replace function
@@ -763,11 +757,11 @@ create or replace function
   out doc3 varchar(256),
   out doc4 varchar(256),
   out doc5 varchar(256),
-  out bank varchar(16),
-  out agency varchar(16),
-  out account varchar(64),
-  out partner varchar(64),
-  out partner_account varchar(256)
+  out bank varchar (16),
+  out agency varchar (16),
+  out account varchar (64),
+  out partner varchar (64),
+  out partner_account varchar (256)
 ) returns setof record as $$
 begin
   return query select uf.first_name, uf.middle_name, uf.last_name, uf.doc1, uf.doc2, uf.doc3, uf.doc4, uf.doc5, uc.bank, uc.agency, uc.account, uc.partner, uc.partner_account
@@ -812,9 +806,9 @@ $$ language plpgsql stable security definer set search_path = public, pg_temp co
 create or replace function
   get_bank_data (
       a_id bigint,
-  out bank varchar(16),
-  out agency varchar(16),
-  out account varchar(64),
+  out bank varchar (16),
+  out agency varchar (16),
+  out account varchar (64),
   out partner character varying(64),
   out partner_account character varying(256)
 ) returns setof record as $$
@@ -893,6 +887,7 @@ declare
   b_value numeric(23,8);;
   b_timestamp timestamp(3);;
 begin
+
   if a_search_criteria = 'history' then
     return query select o.order_id, o.user_id, o.country_id, o.order_type, o.status, o.partner, o.created, o.currency, o.initial_value, o.total_fee, o.doc1, o.doc2, o.bank, o.agency, o.account, o.closed, o.net_value, o.comment, o.image_id, u.email, un.first_name, un.middle_name, un.last_name
     from orders o
@@ -956,26 +951,18 @@ create or replace function
   out admin_l2 bigint,
   out admin_o1 bigint,
   out admin_o2 bigint,
-  out email_g1 varchar(256),
-  out email_g2 varchar(256),
-  out email_l1 varchar(256),
-  out email_l2 varchar(256),
-  out email_o1 varchar(256),
-  out email_o2 varchar(256)
-  out user_country_g1 varchar(4),
-  out user_country_g2 varchar(4),
-  out user_country_l1 varchar(4),
-  out user_country_l2 varchar(4),
-  out user_country_o1 varchar(4),
-  out user_country_o2 varchar(4)
+  out email_g1 varchar (256),
+  out email_g2 varchar (256),
+  out email_l1 varchar (256),
+  out email_l2 varchar (256),
+  out email_o1 varchar (256),
+  out email_o2 varchar (256)
 ) returns setof record as $$
 declare
 begin
 
 -- not working###
-return query select c.admin_g1, c.admin_g2, c.admin_l1, c.admin_l2, c.admin_o1, c.admin_o2,
-               ug1.email as email_g1, ug2.email as email_g2, ul1.email as email_l1, ul2.email as email_l2, uo1.email as email_o1, uo2.email as email_o2,
-               ug1.country as user_country_g1, ug2.country as user_country_g2, ul1.country as user_country_l1, ul2.country as user_country_l2, uo1.country as user_country_o1, uo2.country as user_country_o2,
+return query select c.admin_g1, c.admin_g2, c.admin_l1, c.admin_l2, c.admin_o1, c.admin_o2, ug1.email as email_g1, ug2.email as email_g2, ul1.email as email_l1, ul2.email as email_l2, uo1.email as email_o1, uo2.email as email_o2
              from currencies c
                left join users ug1 on c.admin_g1 = ug1.id
                left join users ug2 on c.admin_g2 = ug2.id
@@ -990,7 +977,7 @@ $$ language plpgsql stable security definer set search_path = public, pg_temp co
 
 # --- !Downs
 
-drop function if exists find_user_by_email_and_password_invoker(varchar(256), varchar(4), text, inet, bool) cascade;
+drop function if exists find_user_by_email_and_password_invoker(varchar(256), text, text, inet, bool) cascade;
 drop function if exists first_agg() cascade;
 drop function if exists last_agg() cascade;
 drop aggregate if exists first(anyelement);
@@ -1011,13 +998,13 @@ drop function if exists base32_decode (text) cascade;
 drop function if exists turnon_emails (bigint) cascade;
 drop function if exists turnoff_emails (bigint) cascade;
 drop function if exists find_user_by_id (bigint) cascade;
-drop function if exists user_exists (varchar(256), varchar(4)) cascade;
-drop function if exists user_has_totp (text, text) cascade;
+drop function if exists user_exists (bigint) cascade;
+drop function if exists user_has_totp (bigint) cascade;
 drop function if exists user_add_pgp (bigint, text, int, text) cascade;
 drop function if exists user_remove_pgp (bigint, text, int) cascade;
 drop function if exists totp_login_step1 (varchar(256), text, text, inet) cascade;
 drop function if exists totp_login_step2 (varchar(256), text, int, text, inet) cascade;
-drop function if exists find_user_by_email_and_password (varchar(256), varchar(4), text, inet) cascade;
+drop function if exists find_user_by_email_and_password (varchar(256), text, text, inet) cascade;
 drop function if exists find_token (varchar(256)) cascade;
 drop function if exists delete_token (varchar(256)) cascade;
 drop function if exists delete_expired_tokens () cascade;

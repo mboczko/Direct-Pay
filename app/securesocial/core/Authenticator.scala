@@ -36,7 +36,7 @@ import org.apache.commons.codec.binary.Base32
  * @param expirationDate The expiration time
  */
 case class Authenticator(id: String, uid: Option[Long], creationDate: DateTime,
-    lastUsed: DateTime, expirationDate: DateTime, totpSecret: Option[String], email: String, user_country: String) {
+    lastUsed: DateTime, expirationDate: DateTime, totpSecret: Option[String], email: String) {
 
   /**
    * Creates a cookie representing this authenticator
@@ -174,11 +174,11 @@ object Authenticator {
    * @param totpSecret the secret to complete two factor auth or None
    * @return an authenticator or error if there was a problem creating it
    */
-  def create(uid: Option[Long], totpSecret: Option[String], email: String, user_country: String): Authenticator = {
+  def create(uid: Option[Long], totpSecret: Option[String], email: String): Authenticator = {
     val id = IdGenerator.generate
     val now = DateTime.now()
     val expirationDate = now.plusMinutes(absoluteTimeout)
-    val authenticator = Authenticator(id, uid, now, now, expirationDate, totpSecret, email, user_country)
+    val authenticator = Authenticator(id, uid, now, now, expirationDate, totpSecret, email)
     AuthenticatorStore.save(authenticator)
     authenticator
   }

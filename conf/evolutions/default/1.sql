@@ -25,13 +25,13 @@ create table users (
     id bigint primary key,
     created timestamp(3) default current_timestamp not null,
     email varchar(256) not null,
-    user_country varchar(4),
     on_mailing_list bool default false not null,
     tfa_enabled bool default false not null,
     verification int default 0 not null,
     pgp text,
     active bool default true not null,
     manualauto_mode bool default true not null,
+    user_country varchar(4),
     docs_verified bool default false not null,
     partner varchar(64)
 );
@@ -98,7 +98,6 @@ create table users_backup_otps (
 
 create table trusted_action_requests (
     email varchar(256),
-    user_country varchar(4),
     is_signup boolean not null,
     primary key (email, is_signup)
 );
@@ -130,7 +129,6 @@ create index login_log_idx on event_log(user_id, created desc, id desc) where ty
 create table tokens (
     token varchar(256) not null primary key,
     email varchar(256) not null,
-    user_country varchar(4) not null,
     creation timestamp(3) not null,
     expiration timestamp(3) not null,
     is_signup bool not null

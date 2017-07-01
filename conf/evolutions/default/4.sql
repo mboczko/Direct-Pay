@@ -22,13 +22,12 @@ create or replace function
 insert_as_admin (
   a_country varchar(4),
   a_email varchar(256),
-  a_user_country varchar(4),
   a_glo_n varchar(8)
 ) returns void as $$
 declare
   b_user_id bigint;;
 begin
-  select id into b_user_id from users where email = a_email and country = a_user_country;;
+  select id into b_user_id from users where email = a_email;;
   if a_glo_n = 'admin_g1' then
     update currencies set admin_g1 = b_user_id where country = a_country;;
   end if;;
@@ -59,13 +58,7 @@ save_admins (
   a_email_l1 varchar(256),
   a_email_l2 varchar(256),
   a_email_o1 varchar(256),
-  a_email_o2 varchar(256),
-  a_user_country_g1 varchar(4),
-  a_user_country_g2 varchar(4),
-  a_user_country_l1 varchar(4),
-  a_user_country_l2 varchar(4),
-  a_user_country_o1 varchar(4),
-  a_user_country_o2 varchar(4)
+  a_email_o2 varchar(256)
 ) returns void as $$
 declare
   b_id_g1 bigint;;
@@ -83,12 +76,12 @@ begin
   b_id_o2 = 0;;
 --  select exists(select 1 from users where email = a_email_g1) as "exists";;
   if a_email_g1 != '' and a_email_l1 != '' then    
-    select id into b_id_g1 from users where email = a_email_g1 and user_country = a_user_country_g1;;
-    if a_email_g2 != '' then select id into b_id_g2 from users where email = a_email_g2 and user_country = a_user_country_g2;; end if;;
-    select id into b_id_l1 from users where email = a_email_l1 and user_country = a_user_country_l1;;
-    if a_email_l2 != '' then select id into b_id_l2 from users where email = a_email_l2 and user_country = a_user_country_l2;; end if;;
-    if a_email_o1 != '' then select id into b_id_o1 from users where email = a_email_o1 and user_country = a_user_country_o1;; end if;;
-    if a_email_o2 != '' then select id into b_id_o2 from users where email = a_email_o2 and user_country = a_user_country_o2;; end if;;
+    select id into b_id_g1 from users where email = a_email_g1;;
+    if a_email_g2 != '' then select id into b_id_g2 from users where email = a_email_g2;; end if;;
+    select id into b_id_l1 from users where email = a_email_l1;;
+    if a_email_l2 != '' then select id into b_id_l2 from users where email = a_email_l2;; end if;;
+    if a_email_o1 != '' then select id into b_id_o1 from users where email = a_email_o1;; end if;;
+    if a_email_o2 != '' then select id into b_id_o2 from users where email = a_email_o2;; end if;;
 
     update currencies set admin_g1 = b_id_g1, admin_g2 = b_id_g2, admin_l1 = b_id_l1, admin_l2 = b_id_l2, admin_o1 = b_id_o1, admin_o2 = b_id_o2 where country = a_country;;
   else
@@ -566,7 +559,7 @@ $$ language plpgsql volatile security invoker set search_path = public, pg_temp 
 
 
 # --- !Downs
-drop function if exists insert_as_admin(varchar(4), varchar(256), varchar(4), varchar(8)) cascade;
+drop function if exists insert_as_admin(varchar(4), varchar(256), varchar(8)) cascade;
 drop function if exists currency_insert(integer, varchar(16), varchar(4)) cascade;
 drop function if exists insert_admin(integer, varchar(16), varchar(4)) cascade;
 drop function if exists create_order(Long, varchar(4), varchar(4), varchar(2), varchar(128)) cascade;

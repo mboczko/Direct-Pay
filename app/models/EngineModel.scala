@@ -176,13 +176,7 @@ class EngineModel(val db: String = "default") {
       row[Option[String]]("email_l1").getOrElse(""),
       row[Option[String]]("email_l2").getOrElse(""),
       row[Option[String]]("email_o1").getOrElse(""),
-      row[Option[String]]("email_o2").getOrElse(""),
-      row[Option[String]]("user_country_g1").getOrElse(""),
-      row[Option[String]]("user_country_g2").getOrElse(""),
-      row[Option[String]]("user_country_l1").getOrElse(""),
-      row[Option[String]]("user_country_l2").getOrElse(""),
-      row[Option[String]]("user_country_o1").getOrElse(""),
-      row[Option[String]]("user_country_o2").getOrElse("")
+      row[Option[String]]("email_o2").getOrElse("")
     )).toList
   }
 

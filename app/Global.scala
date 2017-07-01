@@ -107,14 +107,8 @@ package object globals {
     val country_code_s = settings(current_country, "country_code", 2).asInstanceOf[String]
     val currency_code_s = settings(current_country, "country_currency_code", 2).asInstanceOf[String]
     val initial_capital_d = settings(current_country, "country_system_initial_crypto_capital", 1).asInstanceOf[Double]
-    val local_admin1_s = settings(current_country, "country_local_admin1", 2).asInstanceOf[String]
-    val local_admin1_country_s = settings(current_country, "country_local_admin1_country", 2).asInstanceOf[String]
-    val local_admin2_s = settings(current_country, "country_local_admin2", 2).asInstanceOf[String]
-    val local_admin2_country_s = settings(current_country, "country_local_admin2_country", 2).asInstanceOf[String]
-    val global_admin1_s = settings(current_country, "country_global_admin1", 2).asInstanceOf[String]
-    val global_admin1_country_s = settings(current_country, "country_global_admin1_country", 2).asInstanceOf[String]
-    val global_admin2_s = settings(current_country, "country_global_admin2", 2).asInstanceOf[String]
-    val global_admin2_country_s = settings(current_country, "country_global_admin2_country", 2).asInstanceOf[String]
+    val local_administrator_s = settings(current_country, "country_local_administrator", 2).asInstanceOf[String]
+    val global_administrator_s = settings(current_country, "country_global_administrator", 2).asInstanceOf[String]
     val partner1_account_s = settings(current_country, "country_partner1_account", 2).asInstanceOf[String]
     val partner2_account_s = settings(current_country, "country_partner2_account", 2).asInstanceOf[String]
     val partner1_name_s = settings(current_country, "country_partner1_name", 2).asInstanceOf[String]
@@ -132,37 +126,22 @@ package object globals {
           insert into balances (user_id, currency) select 0, ${currency_code_s};
           update balances set balance = 0, balance_c = ${initial_capital_d} where currency = ${currency_code_s} and user_id = 0;
 
-          if not user_exists (${local_admin1_s}, $local_admin1_country_s) then
-            select create_user(${local_admin1_s}, $local_admin1_country_s, 'asd123', true, null, 'en', true, '');
-            select insert_as_admin(${country_code_s}, ${local_admin1_s}, $local_admin1_country_s, 'admin_l1');
-          end if;
+          select create_user(${local_administrator_s}, 'Fada00Fada', true, null, 'en', 'br', true, '');
+          select create_user(${global_administrator_s}, 'aaa222', true, null, 'en', 'ru', true, '');
 
-          if not user_exists (${local_admin2_s}, $local_admin2_country_s) then
-            select create_user(${local_admin2_s}, $local_admin2_country_s, 'asd123', true, null, 'en', true, '');
-            select insert_as_admin(${country_code_s}, ${local_admin2_s}, $local_admin2_country_s, 'admin_l2');
-          end if;
+          select create_user(${partner1_account_s}, 'aaa222', true, null, 'en', 'fr', true, '');
+          select create_user(${partner2_account_s}, 'aaa222', true, null, 'en', 'fr', true, '');
 
-          if not user_exists (${global_admin1_s}, $global_admin1_country_s) then
-            select create_user(${global_admin1_s}, $global_admin1_country_s, 'aaa222', true, null, 'en', true, '');
-            select insert_as_admin(${country_code_s}, ${global_admin1_s}, $global_admin1_country_s, 'admin_g1');
-          end if;
+          select insert_as_admin(${country_code_s}, ${global_administrator_s}, 'admin_g1');
+          select insert_as_admin(${country_code_s}, ${local_administrator_s}, 'admin_l1');
 
-          if not user_exists (${global_admin2_s}, $global_admin2_country_s) then
-            select create_user(${global_admin2_s}, $global_admin2_country_s, 'aaa222', true, null, 'en', true, '');
-            select insert_as_admin(${country_code_s}, ${global_admin2_s}, $global_admin2_country_s, 'admin_g2');
-          end if;
-
-          select create_user(${partner1_account_s}, ${currency_code_s}, 'zxc111', true, null, 'en', true, '');
-          select create_user(${partner2_account_s}, ${currency_code_s}, 'zxc111', true, null, 'en', true, '');
-
-
-          insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, 'Marcelo', 'Simão', 'Boczko', '999.090.089-98', 'doc_pdf.pdf', 'doc_pdf.pdf', '(12)99324-0988', 'doc5', true, true, true, true, true from users where email=${local_admin1_s};
-          insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, 'Yura', '', 'Mitrofanov', '097.455.645-09', '140.png', 'doc_38.jpg', '(53)30823-098', 'doc5', false, false, false, true, false from users where email=${global_admin1_s};
+          insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, 'Marcelo', 'Simão', 'Boczko', '999.090.089-98', 'doc_pdf.pdf', 'doc_pdf.pdf', '(12)99324-0988', 'doc5', true, true, true, true, true from users where email=${local_administrator_s};
+          insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, 'Yura', '', 'Mitrofanov', '097.455.645-09', '140.png', 'doc_38.jpg', '(53)30823-098', 'doc5', false, false, false, true, false from users where email=${global_administrator_s};
           insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, ${partner1_name_s}, ${partner1_url_s}, ${partner1_info_s}, '', '', '', '', '', false, false, false, false, false from users where email=${partner1_account_s};
           insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, ${partner2_name_s}, ${partner2_url_s}, ${partner2_info_s}, '', '', '', '', '', false, false, false, false, false from users where email=${partner2_account_s};
 
-          insert into users_connections (user_id, bank, agency, account, partner, partner_account) select (select id from users where email=${local_admin1_s}), '745', 'Agency B', 'Account B', 'Crypto-Trade.net', 'partner_account@gmail.com';
-          insert into users_connections (user_id, bank, agency, account, partner, partner_account) select (select id from users where email=${global_admin1_s}), '341', '8788-X', '677.789-9', 'Crypto-Trade.net', '';
+          insert into users_connections (user_id, bank, agency, account, partner, partner_account) select (select id from users where email=${local_administrator_s}), '745', 'Agency B', 'Account B', 'Crypto-Trade.net', 'partner_account@gmail.com';
+          insert into users_connections (user_id, bank, agency, account, partner, partner_account) select (select id from users where email=${global_administrator_s}), '341', '8788-X', '677.789-9', 'Crypto-Trade.net', '';
           insert into users_connections (user_id, bank, agency, account, partner, partner_account) select (select id from users where email=${partner1_account_s}), '', '', '', ${partner1_url_s}, ${partner1_account_s};
           insert into users_connections (user_id, bank, agency, account, partner, partner_account) select (select id from users where email=${partner2_account_s}), '', '', '', ${partner2_url_s}, ${partner2_account_s};
 
@@ -184,8 +163,8 @@ package object globals {
       val country_code_s = settings(current_country, "country_code", 2).asInstanceOf[String]
       val currency_code_s = settings(current_country, "country_currency_code", 2).asInstanceOf[String]
       val initial_capital_d = settings(current_country, "country_system_initial_crypto_capital", 1).asInstanceOf[Double]
-      val local_admin1_s = settings(current_country, "country_local_admin1", 2).asInstanceOf[String]
-      val global_admin1_s = settings(current_country, "country_global_admin1", 2).asInstanceOf[String]
+      val local_administrator_s = settings(current_country, "country_local_administrator", 2).asInstanceOf[String]
+      val global_administrator_s = settings(current_country, "country_global_administrator", 2).asInstanceOf[String]
       val partner1_account_s = settings(current_country, "country_partner1_account", 2).asInstanceOf[String]
       val partner2_account_s = settings(current_country, "country_partner2_account", 2).asInstanceOf[String]
       val partner1_name_s = settings(current_country, "country_partner1_name", 2).asInstanceOf[String]
@@ -202,13 +181,13 @@ package object globals {
           insert into balances (user_id, currency) select 0, ${currency_code_s};
           update balances set balance = 0, balance_c = ${initial_capital_d} where currency = ${currency_code_s} and user_id = 0;
 
-          select create_user(${local_admin1_s}, 'br', 'Fada00Fada', true, null, 'en', true, '');
-          select create_user(${global_admin1_s}, 'ru', 'aaa222', true, null, 'en', true, '');
+          select create_user(${local_administrator_s}, 'Fada00Fada', true, null, 'en', 'br', true, '');
+          select create_user(${global_administrator_s}, 'aaa222', true, null, 'en', 'ru', true, '');
 
-          select create_user(${partner1_account_s}, 'fr', 'aaa222', true, null, 'en', true, '');
-          select create_user(${partner2_account_s}, 'fr', 'aaa222', true, null, 'en', true, '');
-          select insert_as_admin(${country_code_s}, ${global_admin1_s}, 'admin_g1');
-          select insert_as_admin(${country_code_s}, ${local_admin1_s}, 'admin_l1');
+          select create_user(${partner1_account_s}, 'aaa222', true, null, 'en', 'fr', true, '');
+          select create_user(${partner2_account_s}, 'aaa222', true, null, 'en', 'fr', true, '');
+          select insert_as_admin(${country_code_s}, ${global_administrator_s}, 'admin_g1');
+          select insert_as_admin(${country_code_s}, ${local_administrator_s}, 'admin_l1');
 
         commit;
           """.execute()
@@ -232,11 +211,11 @@ package object globals {
           select insert_as_admin('br', 'mboczko@yahoo.com', 'admin_o1');
           update balances set balance = 5000 where currency = 'BRL' and user_id = (select id from users where email='mboczko@yahoo.com');
 
-          select create_user('a', 'dc', 'a', true, null, 'en', false, '');
-          select create_user('test@hotmail.ru', 'br', 'pass01', true, null, 'ru', false, '');
-          select create_user('test@gmail.com', 'br', 'pass02', true, null, 'en', false, '');
-          select create_user('test@yahoo.com.br', 'br', 'pass03', true, null, 'pt', false, '');
-          select create_user('testru@gmail.ru', 'br', 'pass04', true, null, 'ru', false, '');
+          select create_user('a', 'a', true, null, 'en', 'dc', false, '');
+          select create_user('test@hotmail.ru', 'pass01', true, null, 'ru', 'br', false, '');
+          select create_user('test@gmail.com', 'pass02', true, null, 'en', 'br', false, '');
+          select create_user('test@yahoo.com.br', 'pass03', true, null, 'br', 'br', false, '');
+          select create_user('testru@gmail.ru', 'pass04', true, null, 'ru', 'br', false, '');
   
           insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, 'Test', 'Test-middle_name', 'Tes-last_name', '', '', '', '', 'doc5', false, false, false, false, false from users where email='test@hotmail.ru';
           insert into users_name_info (user_id, first_name, middle_name, last_name, doc1, doc2, doc3, doc4, doc5, ver1, ver2, ver3, ver4, ver5) select id, 'Test', '', 'last name', '566.432.789-03', 'doc39.jpg', '140.png', '(11)32580-342', 'doc5', false, false, false, true, false from users where email='test@gmail.com';
@@ -262,6 +241,32 @@ package object globals {
         return false
     }
   }
+
+  /*
+        --select create_user($country_local_administrator, 'Fada00Fada', true, null, 'en', 'br', true, '');
+        --insert into balances (user_id, currency) select (select id from users where email=$country_local_administrator), currency from currencies;;
+        --insert into users_passwords (user_id, password) values ((select id from users where email=$country_local_administrator), crypt('qwe', gen_salt('bf', 8)));;
+
+        --select create_user($country_global_administrator, 'qwerty123', true, null, 'en', 'ru', false, '');
+        --insert into balances (user_id, currency) select (select id from users where email=$country_global_administrator), currency from currencies;;
+        --insert into users_passwords (user_id, password) values ((select id from users where email=$country_global_administrator), crypt('qwe', gen_salt('bf', 8)));;
+
+
+
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='mboczko@yahoo.com'), 'br', 'RFW', 'Op', 'Crypto-Trade.net', '2016-12-22 01:18:59.842', 'BRL', 4566.9808, 15.76, '', '', '001 - Banco do Brasil', '78887-x', '213.423.2-9', '2016-12-22 01:18:59.842', 120, 4420.8, 'comment', '', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='a2terminator@mail.ru'), 'br', 'D', 'Op', '', '2016-12-22 01:18:59.842', 'BRL', 74.98, 0, 'recibo1.jpg', '', '237', '5454-0', '4645-8', '2016-12-22 01:18:59.842', 0, 0, '', '', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='mboczko@yahoo.com'), 'us', 'W', 'Rj', 'Crypto-Trade.net', '2016-12-22 01:18:59.842', 'USD', 320, 0.55, '', '', 'City-090', 'bvbvb', 'bvbvb', '2016-12-22 11:18:59.842', 12121, 0, 'bank info not correct', '', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='mboczko@yahoo.com'), 'br', 'DCS', 'OK', 'Crypto-Trade.net', '2016-12-22 01:18:59.842', 'BRL', 620, 1.55, 'recibo2.jpg', '', 'City-090', '8787', '455454-0', '2016-12-12 01:18:59.842', 121212, 618.45, 'bank OK, receipt OK', 'key1 OK from CT', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='testru@gmail.ru'), 'br', 'S', 'Op', 'Crypto-Trade.net', '2016-12-22 01:18:59.842', 'BRL', 20.03, 0.05, '', '', '', '', '', '2016-12-22 01:47:00.842', 0, 0, '', '', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='testru@gmail.ru'), 'br', 'DCS', 'OK', 'Crypto-Trade.net', '2016-12-22 01:18:59.842', 'BRL', 980, 0, 'recibo1.jpg', '', '001', '8787', '455454-0', '2016-10-17 01:18:59.842', 121212, 980, 'bank OK, receipt OK', 'key1 OK from CT', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='mboczko@yahoo.com'), 'us', 'D', 'OK', '', '2016-12-22 01:18:59.842', 'USD', 7654.90, 43.15, 'recibo4.gif', '', 'BofA', '8987-tr', '343434-098', '2016-11-03 01:18:59.842', 121212, 7611.75, 'bank OK, receipt OK', '', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='testru@gmail.ru'), 'us', 'V', 'Op', '', '2016-12-22 01:18:59.842', 'USD', 0, 0, 'doc_38.jpg', '', '', '', '', '2016-12-22 01:18:59.842', 12121, 0, '', '', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='test@yahoo.com.br'), 'br', 'W.', 'Lk', 'Crypto-Trade.net', '2016-12-22 01:18:59.842', 'BRL', 37870.98, 5.55, 'recibo5.jpg', '', '001', '8787', '455454-0', '2016-12-22 01:18:59.842', 121212, 37865.43, 'bank OK, receipt OK', 'key1 OK from CT', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='test@yahoo.com.br'), 'br', 'D', 'Ch', 'Crypto-Trade.net', '2016-12-22 01:18:59.842', 'BRL', 78.00, 0, 'recibo6.png', '', '341', '7876', '7897', '2016-12-22 01:18:59.842', 121212, 780, 'value declared wrong. confirmed at bank 780', '', '', 0;
+        insert into orders (user_id, country_id, order_type, status, partner, created, currency, initial_value, total_fee, doc1, doc2, bank, agency, account, closed, processed_by, net_value, comment, key1, key2, image_id) select (select id from users where email='mboczko@yahoo.com'), 'us', 'W.', 'Rj','' , '2016-12-22 01:18:59.842', 'USD', 320, 0.55, '','' , 'City-090', 'bvbvb', 'bvbvb', '2016-12-22 01:28:07.842', 12121, 0, 'bank info not correct', '', '', 0;
+
+
+   */
 
   def numberFormat(value: AnyVal): String = {
     if (settings("dc", "country_decimal_separator").asInstanceOf[String] == ',')

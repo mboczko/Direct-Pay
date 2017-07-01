@@ -533,7 +533,6 @@ directpay.search.valueprocessedgreaterthan=Value processed greater than
 directpay.management.globaladministrator=Global Administrator
 directpay.management.localadministrator=Local Administrator
 directpay.management.operator=Operator
-directpay.management.administratorcountry=Administrator country
 
 directpay.faq.frequentlyaskedquestions=Frequently Asked Questions
 directpay.faq.1=O que é {0}?

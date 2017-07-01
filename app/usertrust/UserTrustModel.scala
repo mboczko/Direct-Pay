@@ -25,19 +25,19 @@ import anorm._
 
 class UserTrustModel(val db: String = "default") {
   def getTrustedActionRequests = DB.withConnection(db) { implicit c =>
-    SQL"""select email, user_country, is_signup, language from trusted_action_requests"""().map(row =>
-      (row[String]("email"), row[String]("user_country"), row[Boolean]("is_signup"), row[String]("language"))
+    SQL"""select email, is_signup, language from trusted_action_requests"""().map(row =>
+      (row[String]("email"), row[Boolean]("is_signup"), row[String]("language"))
     ).toList
   }
 
-  def trustedActionFinish(email: String, user_country: String, is_signup: Boolean) = DB.withConnection(db) { implicit c =>
-    SQL"""delete from trusted_action_requests where email = $email and and user_country = $user_country and is_signup = $is_signup""".execute
+  def trustedActionFinish(email: String, is_signup: Boolean) = DB.withConnection(db) { implicit c =>
+    SQL"""delete from trusted_action_requests where email = $email and is_signup = $is_signup""".execute
   }
 
   def saveToken(token: Token) = DB.withConnection(db) { implicit c =>
     SQL"""
-    insert into tokens (token, email, user_country, creation, expiration, is_signup, language)
-    values (${token.uuid}, ${token.email}, ${token.user_country}, ${new Timestamp(token.creationTime.getMillis)}, ${new Timestamp(token.expirationTime.getMillis)}, ${token.isSignUp}, ${token.language})
+    insert into tokens (token, email, creation, expiration, is_signup, language)
+    values (${token.uuid}, ${token.email}, ${new Timestamp(token.creationTime.getMillis)}, ${new Timestamp(token.expirationTime.getMillis)}, ${token.isSignUp}, ${token.language})
     """.execute
   }
 }

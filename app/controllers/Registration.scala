@@ -18,28 +18,23 @@ package controllers
 
 import _root_.java.util.UUID
 import javax.inject.Inject
-
-import play.api.mvc.{ Action, Controller, Result }
-import play.api.data.{ Mapping, _ }
+import play.api.mvc.{ Result, Action, Controller }
+import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
-import play.api.{ Logger, Play }
-import play.api.i18n.{ I18nSupport, Lang, Messages, MessagesApi }
+import play.api.{ Play, Logger }
+import play.api.i18n.{ Lang, MessagesApi, I18nSupport, Messages }
 import securesocial.core._
 import Play.current
 import securesocial.core.providers.utils._
 import org.joda.time.DateTime
-
 import scala.language.reflectiveCalls
 import securesocial.core.Token
-
 import scala.Some
 import securesocial.core.SocialUser
 import service.{ PGP, txbitsUserService }
-import models.{ LogEvent, LogType }
+import models.{ LogType, LogEvent }
 import java.security.SecureRandom
-
-import play.api.data.validation.Constraints
 
 /**
  * A controller to handle user registration.
@@ -74,7 +69,7 @@ class Registration @Inject() (val messagesApi: MessagesApi) extends Controller w
     mapping(
       Email -> email.verifying(nonEmpty)
     ) // binding
-    ((email, user_country) => StartRegistrationInfo(email, user_country)) // unbinding
+    ((email) => StartRegistrationInfo(email)) // unbinding
     (info => Some(info.email))
   )
 
@@ -145,9 +140,9 @@ class Registration @Inject() (val messagesApi: MessagesApi) extends Controller w
   }
 
   // XXX: copied from ProviderController TODO: fix duplication
-  def completePasswordAuth[A](id: Long, email: String, user_country: String)(implicit request: play.api.mvc.Request[A]) = {
+  def completePasswordAuth[A](id: Long, email: String)(implicit request: play.api.mvc.Request[A]) = {
     import controllers.ProviderController._
-    val authenticator = Authenticator.create(Some(id), None, email, user_country)
+    val authenticator = Authenticator.create(Some(id), None, email)
     Redirect(toUrl(request2session)).withSession(request2session - SecureSocial.OriginalUrlKey).withCookies(authenticator.toCookie)
   }
 
@@ -168,22 +163,22 @@ class Registration @Inject() (val messagesApi: MessagesApi) extends Controller w
             val user = txbitsUserService.create(SocialUser(
               -1, // this is a placeholder
               t.email,
-              t.user_country,
               0, //not verified
               t.language,
               info.mailingList,
               false,
               None,
               false,
+              securesocial.core.SecureSocial.currentUser.get.user_country,
               false
-            ), t.user_country, info.password, token, info.pgp)
+            ), info.password, token, info.pgp)
             txbitsUserService.deleteToken(t.uuid)
             if (UsernamePasswordProvider.sendWelcomeEmail) {
               Mailer.sendWelcomeEmail(user)
             }
             globals.logModel.logEvent(LogEvent.fromRequest(Some(user.id), Some(user.email), Some(user.user_country), request, LogType.SignupSuccess))
             if (UsernamePasswordProvider.signupSkipLogin) {
-              completePasswordAuth(user.id, user.email, user.user_country)
+              completePasswordAuth(user.id, user.email)
             } else {
               Redirect(onHandleSignUpGoTo).flashing(Success -> Messages(SignUpDone)).withSession(request2session)
             }
@@ -205,7 +200,7 @@ class Registration @Inject() (val messagesApi: MessagesApi) extends Controller w
       email => {
         txbitsUserService.userExists(email) match {
           case true => {
-            globals.userModel.trustedActionStart(email, user_country, isSignup = false, "")
+            globals.userModel.trustedActionStart(email, isSignup = false, "")
           }
           case false => {
             // The user wasn't registered. Oh, well.
@@ -228,16 +223,16 @@ class Registration @Inject() (val messagesApi: MessagesApi) extends Controller w
         BadRequest(views.html.auth.Registration.resetPasswordPage(errors, token))
       },
         p => {
-          val toFlash = txbitsUserService.userExists(t.email, t.user_country) match {
+          val toFlash = txbitsUserService.userExists(t.email) match {
             case true => {
               // this should never actually fail because we checked the token already
-              txbitsUserService.resetPass(t.email, t.user_country, token, p._1)
+              txbitsUserService.resetPass(t.email, token, p._1)
               txbitsUserService.deleteToken(token)
-              Mailer.sendPasswordChangedNotice(t.email, globals.userModel.userPgpByEmail(t.email, t.user_country))
+              Mailer.sendPasswordChangedNotice(t.email, globals.userModel.userPgpByEmail(t.email))
               Success -> Messages(PasswordUpdated)
             }
             case false => {
-              Logger.error("[securesocial] could not find user with email %s, country %s during password reset".format(t.email, t.user_country))
+              Logger.error("[securesocial] could not find user with email %s during password reset".format(t.email))
               Error -> Messages(ErrorUpdatingPassword)
             }
           }
@@ -284,5 +279,5 @@ object Registration {
   }
 
   case class RegistrationInfo(mailingList: Boolean, password: String, pgp: String)
-  case class StartRegistrationInfo(email: String, user_country: String)
+  case class StartRegistrationInfo(email: String)
 }

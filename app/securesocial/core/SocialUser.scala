@@ -23,14 +23,14 @@ import play.api.libs.json.{ JsValue, Json, JsObject, Writes }
  */
 
 // Next line should not be br but default_country
-case class SocialUser(id: Long, email: String, user_country: String, verification: Int, language: String, onMailingList: Boolean, TFAEnabled: Boolean = false, pgp: Option[String] = None, manualauto_mode: Boolean, docs_verified: Boolean, partner: Option[String] = None, admin_xx: Option[String] = None)
+case class SocialUser(id: Long, email: String, verification: Int, language: String, onMailingList: Boolean, TFAEnabled: Boolean = false, pgp: Option[String] = None, manualauto_mode: Boolean, user_country: String, docs_verified: Boolean, partner: Option[String] = None, admin_xx: Option[String] = None)
 
 object SocialUser {
   implicit def writes = new Writes[SocialUser] {
     def writes(u: SocialUser): JsValue = {
       // include everything except the id
-      Json.obj("email" -> u.email, "user_country" -> u.user_country, "verification" -> u.verification, "onMailingList" -> u.onMailingList,
-        "TFAEnabled" -> u.TFAEnabled, "pgp" -> u.pgp, "language" -> u.language, "manualauto_mode" -> u.manualauto_mode,
+      Json.obj("email" -> u.email, "verification" -> u.verification, "onMailingList" -> u.onMailingList,
+        "TFAEnabled" -> u.TFAEnabled, "pgp" -> u.pgp, "language" -> u.language, "manualauto_mode" -> u.manualauto_mode, "user_country" -> u.user_country,
         "docs_verified" -> u.docs_verified, "partner" -> u.partner, "admin_xx" -> u.admin_xx)
     }
   }

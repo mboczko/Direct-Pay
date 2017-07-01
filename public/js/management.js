@@ -10,7 +10,7 @@ $(function(){
     });
 
     function submit_admin_form() {
-        if ($('#admin_g1').val() != "" && $('#admin_g1_country').val() != "" && $('#admin_l1_country').val() != "" && $('#admin_l1').val() != "") {
+        if ($('#admin_g1').val() != "" && $('#admin_l1').val() != "") {
             alert(8);
             API.save_admins($('#hidden_fees_information').attr('country_code'), $('#admin_g1').val(), $('#admin_g2').val(), $('#admin_l1').val(), $('#admin_l2').val(), $('#admin_o1').val(), $('#admin_o2').val()).success(function () {
                 $.pnotify({
@@ -100,12 +100,6 @@ $(function(){
             admin_info.email_l2 = data[0].email_l2;
             admin_info.email_o1 = data[0].email_o1;
             admin_info.email_o2 = data[0].email_o2;
-            admin_info.user_country_g1 = data[0].user_country_g1;
-            admin_info.user_country_g2 = data[0].user_country_g2;
-            admin_info.user_country_l1 = data[0].user_country_l1;
-            admin_info.user_country_l2 = data[0].user_country_l2;
-            admin_info.user_country_o1 = data[0].user_country_o1;
-            admin_info.user_country_o2 = data[0].user_country_o2;
 /*            if(admin_info.admin_g1 == "0") admin_info.display_g1 = "none"; else admin_info.display_g1 = "block";
             if(admin_info.admin_g2 == "0") admin_info.display_g2 = "none"; else admin_info.display_g2 = "block";
             if(admin_info.admin_l1 == "0") admin_info.display_l1 = "none"; else admin_info.display_l1 = "block";
